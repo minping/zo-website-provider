@@ -2,15 +2,20 @@ package com.zode.web.article.service.impl;
 
 import com.common.base.BaseService;
 import com.common.util.DateKit;
+import com.common.util.Result;
 import com.common.util.StrKit;
+import com.file.service.FileStorageService;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.zode.web.article.dto.ArticleVo;
 import com.zode.web.article.service.ArticleService;
 import com.zode.web.article.util.ColorGenerator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,9 +29,26 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
 
     public static final String SQL_KEY = "website.web.article.";
 
+    @Value("${zode.server.path}")
+    private String serverPath;
+
+    @Resource
+    private FileStorageService fileStorageService;
+
     @Override
     public List<Record> queryAllTags() {
         return Db.find(Db.getSqlPara(SQL_KEY + "queryAllTags"));
+    }
+
+    /**
+     * 技术标签统计
+     *
+     * @return
+     */
+    @Override
+    public List<Record> queryAllTagStatics() {
+        List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryAllTagStatics"));
+        return list;
     }
 
     @Override
@@ -173,5 +195,22 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
     @Override
     public void likeArticle(String id) {
         Db.update(Db.getSqlPara(SQL_KEY+"likeArticle",Kv.by("id",id)));
+    }
+
+    /**
+     * 上传图片
+     *
+     * @param file
+     * @return
+     */
+    @Override
+    public Result uploadImage(MultipartFile file) {
+        Result result = fileStorageService.uploadFile(file);
+        if (result.isSuccess()){
+            Record data = (Record) result.getData();
+            return success().setData(Kv.by("url",serverPath + "/file/download/" +  data.getStr("zo_file_id")));
+        }else {
+            return result;
+        }
     }
 }

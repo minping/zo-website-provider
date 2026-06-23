@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages ={"com.zode","com.jfinal","com.common",})
+@ComponentScan(basePackages ={"com.zode","com.jfinal","com.common","com.file"})
 public class ZodeWebsiteApplication {
 
     public static void main(String[] args) {
