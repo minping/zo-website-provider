@@ -25,9 +25,9 @@ public class ArticleIndexController extends BaseController {
     @Resource
     private ArticleService articleService;
 
-    @GetMapping("/queryAllTags")
-    public Result queryAllTags(){
-        List<Record> list = articleService.queryAllTags();
+    @GetMapping("/queryAllTagStatics")
+    public Result queryAllTagStatics(){
+        List<Record> list = articleService.queryAllTagStatics();
         List<Map<String, Object>> res = list.stream().map(r -> r.getColumns()).collect(Collectors.toList());
         return Result.me().success().setData(res);
     }

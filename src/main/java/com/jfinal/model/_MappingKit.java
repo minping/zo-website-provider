@@ -16,6 +16,11 @@ import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 public class _MappingKit {
 	
 	public static void mapping(ActiveRecordPlugin arp) {
+		arp.addMapping("zo_file", "zo_file_id", ZoFile.class);
+		arp.addMapping("zo_website_api", "zo_website_api_id", ZoWebsiteApi.class);
+		arp.addMapping("zo_website_api_call_log", "zo_website_api_call_log_id", ZoWebsiteApiCallLog.class);
+		arp.addMapping("zo_website_api_param", "zo_website_api_param_id", ZoWebsiteApiParam.class);
+		arp.addMapping("zo_website_api_tag", "zo_website_api_tag_id", ZoWebsiteApiTag.class);
 		arp.addMapping("zo_website_article", "zo_website_article_id", ZoWebsiteArticle.class);
 		arp.addMapping("zo_website_article_tag", "zo_website_article_tag_id", ZoWebsiteArticleTag.class);
 	}

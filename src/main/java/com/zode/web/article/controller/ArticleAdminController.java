@@ -6,8 +6,10 @@ import com.jfinal.plugin.activerecord.Record;
 import com.zode.web.article.dto.ArticleVo;
 import com.zode.web.article.service.ArticleService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.ws.rs.POST;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +34,7 @@ public class ArticleAdminController extends BaseController {
         return Result.me().success().setData(res);
     }
 
-    @GetMapping("/insertTag")
+    @PostMapping("/insertTag")
     public Result insertTag(String tagName,String tagColor){
         return articleService.insertTag(tagName,tagColor) ? Result.me().success() : Result.me().error();
     }
@@ -71,4 +73,10 @@ public class ArticleAdminController extends BaseController {
         Record record = articleService.queryArticleStatics();
         return Result.me().success(record.getColumns());
     }
+
+    @PostMapping("/uploadImage")
+    public Result uploadImage(@RequestParam("file") MultipartFile file){
+        return articleService.uploadImage(file);
+    }
+
 }

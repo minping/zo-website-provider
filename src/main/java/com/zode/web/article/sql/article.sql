@@ -5,6 +5,18 @@
         from zo_website_article_tag where deleted = '0' order by sort_order
     #end
 
+    #sql("queryAllTagStatics")
+        SELECT t.name AS tag_name,t.zo_website_article_tag_id AS tag_id,
+               SUM(IFNULL(like_count,0)) AS like_count,
+               SUM(IFNULL(view_count,0)) AS view_count,
+               COUNT(a.zo_website_article_id) AS num,
+               t.color
+        FROM zo_website_article_tag t
+                 LEFT JOIN zo_website_article a ON t.zo_website_article_tag_id = a.tag_value AND  a.deleted = '0' AND a.status_value = '1'
+        WHERE t.deleted = '0'
+        GROUP BY t.name,t.zo_website_article_tag_id
+    #end
+
     #sql("queryArticle")
         select zo_website_article_id,title,content,tag_value,tag_text,author_name,date_format(create_time,'%Y-%m-%d %H:%i') create_time,
                date_format(publish_time,'%Y-%m-%d %H:%i') as publish_time,recommend_read_time,cover_gradient,summary,ifnull(like_count,0) as like_count,

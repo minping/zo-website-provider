@@ -1,7 +1,9 @@
 package com.zode.web.article.service;
 
+import com.common.util.Result;
 import com.jfinal.plugin.activerecord.Record;
 import com.zode.web.article.dto.ArticleVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -93,4 +95,17 @@ public interface ArticleService {
      * @return
      */
     List<Record> queryRecommendArticle(String id);
+
+    /**
+     * 技术标签统计
+     * @return
+     */
+    List<Record> queryAllTagStatics();
+
+    /**
+     * 上传图片
+     * @param file
+     * @return
+     */
+    Result uploadImage(MultipartFile file);
 }
