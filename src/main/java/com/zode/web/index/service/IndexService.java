@@ -15,4 +15,10 @@ public interface IndexService {
      */
     Result queryStatics();
 
+    /**
+     * 关于的信息接口
+     * @param userId
+     * @return
+     */
+    Result aboutMe(String userId);
 }

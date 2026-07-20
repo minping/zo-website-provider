@@ -69,7 +69,8 @@
                ifnull(view_count,0) as view_count,
                a.status_value,a.status_text,
                a.sort_order,
-               t.color
+               t.color,
+               a.files
         from zo_website_article a
         inner join zo_website_article_tag t on t.zo_website_article_tag_id = a.tag_value
         where zo_website_article_id = #para(id)

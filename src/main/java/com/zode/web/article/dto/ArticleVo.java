@@ -21,4 +21,5 @@ public class ArticleVo {
     private String statusValue;
     private String statusText;
     private String recommendReadTime;
+    private String files;
 }
