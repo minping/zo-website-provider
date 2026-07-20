@@ -26,4 +26,9 @@ public class IndexController extends BaseController {
         return indexService.queryStatics();
     }
 
+    @GetMapping("/aboutMe")
+    public Result aboutMe(String userId){
+        return indexService.aboutMe(userId);
+    }
+
 }

@@ -297,4 +297,18 @@ public abstract class BaseZoWebsiteArticle<M extends BaseZoWebsiteArticle<M>> ex
 		return get("deleted");
 	}
 	
+	/**
+	 * 附件
+	 */
+	public void setFiles(java.lang.String files) {
+		set("files", files);
+	}
+	
+	/**
+	 * 附件
+	 */
+	public java.lang.String getFiles() {
+		return getStr("files");
+	}
+	
 }

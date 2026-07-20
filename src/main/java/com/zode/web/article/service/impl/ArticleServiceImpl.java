@@ -98,6 +98,7 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
         save.set("recommend_read_time", articleVo.getRecommendReadTime());
         save.set("cover_gradient", articleVo.getCoverGradient());
         save.set("deleted", 0);
+        save.set("files", articleVo.getFiles());
         if (isAdd){
             return Db.save("zo_website_article",save);
         }else{
