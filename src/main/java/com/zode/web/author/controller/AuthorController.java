@@ -3,6 +3,7 @@ package com.zode.web.author.controller;
 import com.common.base.BaseController;
 import com.common.util.Result;
 import com.zode.web.author.dto.AuthorInfoDto;
+import com.zode.web.author.dto.AuthorProductDto;
 import com.zode.web.author.dto.AuthorProjectDto;
 import com.zode.web.author.service.AuthorService;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +45,20 @@ public class AuthorController extends BaseController {
     @GetMapping("/queryProjectInfo")
     public Result queryProjectInfo(String id){
         return authorService.queryProjectInfo(id);
+    }
+
+    @PostMapping("/saveProductInfo")
+    public Result saveProductInfo(@RequestBody AuthorProductDto productDto){
+        return authorService.saveProductInfo(productDto);
+    }
+
+    @GetMapping("/queryProductList")
+    public Result queryProductList(String authId){
+        return authorService.queryProductList(authId);
+    }
+
+    @GetMapping("/queryProductInfo")
+    public Result queryProductInfo(String id){
+        return authorService.queryProductInfo(id);
     }
 }

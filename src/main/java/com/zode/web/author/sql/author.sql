@@ -40,7 +40,9 @@
             tech,
             image,
             start_time,
-            end_time
+            end_time,
+            finish_status,
+            user_num
         from zo_website_author_project
         where deleted = '0'
         order by start_time desc
@@ -56,11 +58,43 @@
             tech,
             image,
             start_time,
-            end_time
+            end_time,
+            finish_status,
+            user_num
         from zo_website_author_project
         where deleted = '0'
         and zo_website_author_project_id = #para(id)
         order by start_time desc
+    #end
+
+    #sql("queryProductList")
+        select
+            zo_website_author_product_id as id,
+            zo_website_author_id as author_id,
+            name,
+            img,
+            description,
+            play_url,
+            github_url,
+            tags
+        from zo_website_author_product
+        where deleted = '0'
+        order by zo_website_author_product_id desc
+    #end
+
+    #sql("queryProductById")
+        select
+            zo_website_author_product_id as id,
+            zo_website_author_id as author_id,
+            name,
+            img,
+            description,
+            play_url,
+            github_url,
+            tags
+        from zo_website_author_product
+        where deleted = '0'
+        and zo_website_author_product_id = #para(id)
     #end
 
 #end
