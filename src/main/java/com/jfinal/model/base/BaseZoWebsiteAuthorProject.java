@@ -131,4 +131,32 @@ public abstract class BaseZoWebsiteAuthorProject<M extends BaseZoWebsiteAuthorPr
 		return getStr("end_time");
 	}
 	
+	/**
+	 * 验收情况
+	 */
+	public void setFinishStatus(java.lang.String finishStatus) {
+		set("finish_status", finishStatus);
+	}
+	
+	/**
+	 * 验收情况
+	 */
+	public java.lang.String getFinishStatus() {
+		return getStr("finish_status");
+	}
+	
+	/**
+	 * 用户基数
+	 */
+	public void setUserNum(java.lang.String userNum) {
+		set("user_num", userNum);
+	}
+	
+	/**
+	 * 用户基数
+	 */
+	public java.lang.String getUserNum() {
+		return getStr("user_num");
+	}
+	
 }

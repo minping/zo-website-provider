@@ -2,6 +2,7 @@ package com.zode.web.author.service;
 
 import com.common.util.Result;
 import com.zode.web.author.dto.AuthorInfoDto;
+import com.zode.web.author.dto.AuthorProductDto;
 import com.zode.web.author.dto.AuthorProjectDto;
 
 /**
@@ -45,4 +46,26 @@ public interface AuthorService {
      * @return
      */
     Result queryProjectInfo(String id);
+
+    /**
+     * 保存自研项目
+     * @param productDto
+     * @return
+     */
+    Result saveProductInfo(AuthorProductDto productDto);
+
+    /**
+     * 查询自研项目列表
+     * @param authId
+     * @return
+     */
+    Result queryProductList(String authId);
+
+    /**
+     * 查询自研项目信息
+     * @param id
+     * @return
+     */
+    Result queryProductInfo(String id);
+
 }

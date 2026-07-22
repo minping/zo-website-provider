@@ -22,4 +22,8 @@ public class AuthorProjectDto {
     private String startTime;
     @JsonProperty("end_time")
     private String endTime;
+    @JsonProperty("user_num")
+    private String userNum;
+    @JsonProperty("finish_status")
+    private String finishStatus;
 }

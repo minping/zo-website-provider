@@ -58,8 +58,9 @@ public class IndexServiceImpl extends BaseService implements IndexService {
         List<Map<String, Object>> pList = processList.stream().map(Record::getColumns).collect(Collectors.toList());
         data.put("processList", pList);
         List<Record> projectList = Db.find(Db.getSqlPara("website.web.auth.sql.queryProjectList", Kv.by("authId", userId)));
-        List<Map<String, Object>> dataList = projectList.stream().map(r -> r.getColumns()).collect(Collectors.toList());
-        data.put("projectList", dataList);
+        data.put("projectList", projectList.stream().map(r -> r.getColumns()).collect(Collectors.toList()));
+        List<Record> productList = Db.find(Db.getSqlPara("website.web.auth.sql.queryProductList", Kv.by("authId", userId)));
+        data.put("productList", productList.stream().map(r -> r.getColumns()).collect(Collectors.toList()));
         return Result.me().success().setData(data);
     }
 }

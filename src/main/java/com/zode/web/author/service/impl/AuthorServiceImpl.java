@@ -8,6 +8,7 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.zode.web.author.dto.AuthorInfoDto;
 import com.zode.web.author.dto.AuthorProcessDto;
+import com.zode.web.author.dto.AuthorProductDto;
 import com.zode.web.author.dto.AuthorProjectDto;
 import com.zode.web.author.service.AuthorService;
 import org.springframework.stereotype.Service;
@@ -123,6 +124,8 @@ public class AuthorServiceImpl implements AuthorService {
         r.set("image",projectDto.getImage());
         r.set("start_time",projectDto.getStartTime());
         r.set("end_time",projectDto.getEndTime());
+        r.set("user_num",projectDto.getUserNum());
+        r.set("finish_status",projectDto.getFinishStatus());
         if (isAdd){
             Db.save("zo_website_author_project",r);
         }else{
@@ -154,5 +157,64 @@ public class AuthorServiceImpl implements AuthorService {
     public Result queryProjectInfo(String id) {
         Record projectInfo = Db.findFirst(Db.getSqlPara(SQL_KEY + "queryProjectById", Kv.by("id", id)));
         return Result.me().setData(projectInfo.getColumns());
+    }
+
+    /**
+     * 保存自研项目
+     *
+     * @param productDto
+     * @return
+     */
+    @Override
+    public Result saveProductInfo(AuthorProductDto productDto) {
+        Record authInfo = Db.findFirst(Db.getSqlPara(SQL_KEY + "queryInfoById", Kv.by("id", "")));
+        if (authInfo == null){
+            return Result.me().error().setMessage("未找到作者");
+        }
+        boolean isAdd = false;
+        if (StrKit.isBlank(productDto.getId())){
+            isAdd = true;
+        }
+        Record r = new Record();
+        r.set("zo_website_author_product_id",isAdd ? StrKit.uuid() : productDto.getId());
+        r.set("zo_website_author_id",authInfo.getStr("id"));
+        r.set("name",productDto.getName());
+        r.set("img",productDto.getImg());
+        r.set("description",productDto.getDescription());
+        r.set("play_url",productDto.getPlayUrl());
+        r.set("github_url",productDto.getGithubUrl());
+        r.set("tags",productDto.getTags());
+        r.set("deleted",0);
+        if (isAdd){
+            Db.save("zo_website_author_product",r);
+        }else{
+            Db.update("zo_website_author_product","zo_website_author_product_id",r);
+        }
+        return Result.me().success();
+    }
+
+    /**
+     * 查询自研项目列表
+     *
+     * @param authId
+     * @return
+     */
+    @Override
+    public Result queryProductList(String authId) {
+        List<Record> productList = Db.find(Db.getSqlPara(SQL_KEY + "queryProductList", Kv.by("authId", authId)));
+        List<Map<String, Object>> dataList = productList.stream().map(r -> r.getColumns()).collect(Collectors.toList());
+        return Result.me().success().setData(dataList);
+    }
+
+    /**
+     * 查询自研项目信息
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Result queryProductInfo(String id) {
+        Record productInfo = Db.findFirst(Db.getSqlPara(SQL_KEY + "queryProductById", Kv.by("id", id)));
+        return Result.me().setData(productInfo.getColumns());
     }
 }
