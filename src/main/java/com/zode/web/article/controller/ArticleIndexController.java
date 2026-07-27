@@ -25,6 +25,13 @@ public class ArticleIndexController extends BaseController {
     @Resource
     private ArticleService articleService;
 
+    @GetMapping("/queryAllTags")
+    public Result queryAllTags(){
+        List<Record> list = articleService.queryAllTags();
+        List<Map<String, Object>> res = list.stream().map(r -> r.getColumns()).collect(Collectors.toList());
+        return Result.me().success().setData(res);
+    }
+
     @GetMapping("/queryAllTagStatics")
     public Result queryAllTagStatics(){
         List<Record> list = articleService.queryAllTagStatics();
@@ -39,11 +46,10 @@ public class ArticleIndexController extends BaseController {
         return Result.me().success().setData(res);
     }
 
-    @GetMapping("/queryArticle")
-    public Result queryArticle(String searchValue,String tag,String status){
-        List<Record> list = articleService.queryArticle(searchValue, tag, status);
-        List<Map<String, Object>> res = list.stream().map(r -> r.getColumns()).collect(Collectors.toList());
-        return Result.me().success(res);
+
+    @GetMapping("/queryAllArticle")
+    public Result queryAllArticle(String searchValue,String tag){
+        return articleService.queryAllArticle(searchValue, tag);
     }
 
     @GetMapping("/queryRecommendArticle")

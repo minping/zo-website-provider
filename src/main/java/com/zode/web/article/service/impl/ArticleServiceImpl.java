@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author zhoump
@@ -213,5 +215,26 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
         }else {
             return result;
         }
+    }
+
+    /**
+     * 查询全部文章
+     *
+     * @param searchValue
+     * @param tag
+     * @return
+     */
+    @Override
+    public Result queryAllArticle(String searchValue, String tag) {
+        Kv kv = Kv.create();
+        if (StrKit.isNotBlank(searchValue)){
+            kv.set("searchValue",searchValue);
+        }
+        if (StrKit.isNotBlank(tag)){
+            kv.set("tag",tag);
+        }
+        List<Record> articleList = Db.find(Db.getSqlPara(SQL_KEY + "queryArticle", kv));
+        Map<String, List<Map<String, Object>>> res = articleList.stream().collect(Collectors.groupingBy(a -> a.getStr("tag_text"), Collectors.mapping(r -> r.getColumns(), Collectors.toList())));
+        return Result.me().setData(res);
     }
 }
