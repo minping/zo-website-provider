@@ -6,6 +6,7 @@ import com.zode.web.article.dto.ArticleVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhoump
@@ -108,4 +109,12 @@ public interface ArticleService {
      * @return
      */
     Result uploadImage(MultipartFile file);
+
+    /**
+     * 查询全部文章
+     * @param searchValue
+     * @param tag
+     * @return
+     */
+    Result queryAllArticle(String searchValue, String tag);
 }
