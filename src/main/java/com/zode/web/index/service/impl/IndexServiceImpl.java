@@ -9,6 +9,8 @@ import com.zode.web.index.service.IndexService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +56,7 @@ public class IndexServiceImpl extends BaseService implements IndexService {
         }
         List<Record> processList = Db.find(Db.getSqlPara("website.web.auth.sql.queryProcessById", Kv.by("id", authInfo.getStr("id"))));
         Map<String, Object> data = new HashMap<>();
+        authInfo.set("work_time",calculateWorkExperience(authInfo.getStr("work_time"))+"年");
         data.put("info", authInfo.getColumns());
         List<Map<String, Object>> pList = processList.stream().map(Record::getColumns).collect(Collectors.toList());
         data.put("processList", pList);
@@ -63,4 +66,20 @@ public class IndexServiceImpl extends BaseService implements IndexService {
         data.put("productList", productList.stream().map(r -> r.getColumns()).collect(Collectors.toList()));
         return Result.me().success().setData(data);
     }
+
+    /**
+     * 计算工作年限（精确到小数）
+     * @param startYearMonth 入职年月，格式：yyyy-MM
+     * @return 工作年限（例如：3.5表示3年6个月）
+     */
+    public double calculateWorkExperience(String startYearMonth) {
+        DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
+        YearMonth start = YearMonth.parse(startYearMonth, FORMATTER);
+        YearMonth current = YearMonth.now();
+
+        long months = ChronoUnit.MONTHS.between(start, current);
+        return months < 0 ? 0.0 : Math.round(months / 12.0 * 10.0) / 10.0;
+    }
+
+
 }

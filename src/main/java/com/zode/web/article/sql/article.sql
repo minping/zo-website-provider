@@ -12,7 +12,7 @@
                COUNT(a.zo_website_article_id) AS num,
                t.color
         FROM zo_website_article_tag t
-                 LEFT JOIN zo_website_article a ON t.zo_website_article_tag_id = a.tag_value AND  a.deleted = '0' AND a.status_value = '1'
+         LEFT JOIN zo_website_article a ON t.zo_website_article_tag_id = a.tag_value AND  a.deleted = '0' AND a.status_value = '1'
         WHERE t.deleted = '0'
         GROUP BY t.name,t.zo_website_article_tag_id
     #end
@@ -26,7 +26,7 @@
         #if(searchValue) and instr(title,#para(searchValue)) > 0 #end
         #if(tag) and tag_value = #para(tag) #end
         #if(status) and status_value = #para(status) #end
-         order by status_value asc,create_time desc
+         order by create_time desc
     #end
 
     #sql("queryRecommendArticle")
@@ -74,6 +74,7 @@
         from zo_website_article a
         inner join zo_website_article_tag t on t.zo_website_article_tag_id = a.tag_value
         where zo_website_article_id = #para(id)
+        order by a.create_time desc
     #end
 
     #sql("queryArticleStatics")
@@ -85,6 +86,15 @@
             SUM(IFNULL(view_count,0)) AS view_count
         FROM zo_website_article
         WHERE deleted = '0'
+    #end
+
+    #sql("queryArticleDayStatics")
+        SELECT
+            COUNT(*) AS num,
+            DATE_FORMAT(create_time,'%Y-%m-%d') AS days
+        FROM zo_website_article
+        WHERE deleted = '0'
+        GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d')
     #end
 
     #sql("viewArticle")

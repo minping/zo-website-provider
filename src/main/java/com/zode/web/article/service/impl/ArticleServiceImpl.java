@@ -176,8 +176,20 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
 
     @Override
     public Record queryArticleStatics() {
-
         return Db.findFirst(Db.getSqlPara(SQL_KEY + "queryArticleStatics"));
+    }
+
+    /**
+     * 每日统计发布文章数量
+     *
+     * @return
+     */
+    @Override
+    public Record queryArticleDayStatics() {
+        List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryArticleDayStatics"));
+        Record data = new Record();
+        list.forEach(r -> data.set(r.getStr("days"),r.getStr("num")));
+        return data;
     }
 
     /**
@@ -233,6 +245,7 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
         if (StrKit.isNotBlank(tag)){
             kv.set("tag",tag);
         }
+        kv.set("status_value","1");
         List<Record> articleList = Db.find(Db.getSqlPara(SQL_KEY + "queryArticle", kv));
         Map<String, List<Map<String, Object>>> res = articleList.stream().collect(Collectors.groupingBy(a -> a.getStr("tag_text"), Collectors.mapping(r -> r.getColumns(), Collectors.toList())));
         return Result.me().setData(res);

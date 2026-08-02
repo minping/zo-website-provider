@@ -117,4 +117,10 @@ public interface ArticleService {
      * @return
      */
     Result queryAllArticle(String searchValue, String tag);
+
+    /**
+     * 每日统计发布文章数量
+     * @return
+     */
+    Record queryArticleDayStatics();
 }
