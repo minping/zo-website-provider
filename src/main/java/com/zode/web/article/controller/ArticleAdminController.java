@@ -74,6 +74,12 @@ public class ArticleAdminController extends BaseController {
         return Result.me().success(record.getColumns());
     }
 
+    @GetMapping("/queryArticleDayStatics")
+    public Result queryArticleDayStatics(){
+        Record record = articleService.queryArticleDayStatics();
+        return Result.me().success(record.getColumns());
+    }
+
     @PostMapping("/uploadImage")
     public Result uploadImage(@RequestParam("file") MultipartFile file){
         return articleService.uploadImage(file);

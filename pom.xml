@@ -27,6 +27,7 @@
             <artifactId>zo-common-core</artifactId>
             <version>1.0-SNAPSHOT</version> <!-- 版本与父项目保持一致 -->
         </dependency>
+
     </dependencies>
 
     <build>
