@@ -247,4 +247,32 @@ public abstract class BaseZoWebsiteApi<M extends BaseZoWebsiteApi<M>> extends Mo
 		return getStr("response_time");
 	}
 	
+	/**
+	 * 图标
+	 */
+	public void setIcon(java.lang.String icon) {
+		set("icon", icon);
+	}
+	
+	/**
+	 * 图标
+	 */
+	public java.lang.String getIcon() {
+		return getStr("icon");
+	}
+	
+	/**
+	 * 作者
+	 */
+	public void setAuthor(java.lang.String author) {
+		set("author", author);
+	}
+	
+	/**
+	 * 作者
+	 */
+	public java.lang.String getAuthor() {
+		return getStr("author");
+	}
+	
 }

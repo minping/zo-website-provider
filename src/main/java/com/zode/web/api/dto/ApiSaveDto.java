@@ -28,5 +28,8 @@ public class ApiSaveDto {
     private String status;
     private String responseTime;
 
+    private String icon;
+    private String author;
+
     private List<ApiParamDto> paramList;
 }

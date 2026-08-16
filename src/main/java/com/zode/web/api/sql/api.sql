@@ -12,7 +12,10 @@
             api.response_format,
             api.request_example,
             api.like_count,
-            api.response_time
+            api.response_time,
+            api.icon,
+            api.author,
+            api.status
         FROM zo_website_api api
         WHERE api.deleted = '0'
         ORDER BY api.created_time DESC
@@ -47,7 +50,9 @@
             api.response_format,
             api.request_example,
             api.like_count,
-            api.response_time
+            api.response_time,
+            api.icon,
+            api.author
         FROM zo_website_api api
         WHERE api.deleted = '0'
         and api.status = '1'

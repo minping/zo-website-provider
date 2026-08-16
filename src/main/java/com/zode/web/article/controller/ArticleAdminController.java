@@ -46,6 +46,7 @@ public class ArticleAdminController extends BaseController {
 
     @PostMapping("/insertArticle")
     public Result insertArticle(@RequestBody ArticleVo articleVo){
+        articleVo.check();
         return articleService.insertArticle(articleVo) ? Result.me().success() : Result.me().error();
     }
 
