@@ -52,6 +52,8 @@ public class ApiServiceImpl extends BaseService implements ApiService {
         api.set("status",apiSaveDto.getStatus());
         api.set("deleted","0");
         api.set("response_time",apiSaveDto.getResponseTime());
+        api.set("icon",apiSaveDto.getIcon());
+        api.set("author",apiSaveDto.getAuthor());
         String apiId;
         if (StrKit.isBlank(apiSaveDto.getId())){
             // 新增

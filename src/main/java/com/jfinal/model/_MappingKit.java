@@ -27,6 +27,8 @@ public class _MappingKit {
 		arp.addMapping("zo_website_author_process", "zo_website_author_process_id", ZoWebsiteAuthorProcess.class);
 		arp.addMapping("zo_website_author_product", "zo_website_author_product_id", ZoWebsiteAuthorProduct.class);
 		arp.addMapping("zo_website_author_project", "zo_website_author_project_id", ZoWebsiteAuthorProject.class);
+		arp.addMapping("zo_website_note", "zo_website_note_id", ZoWebsiteNote.class);
+		arp.addMapping("zo_website_note_chapter", "zo_website_note_chapter_id", ZoWebsiteNoteChapter.class);
 		arp.addMapping("zo_website_setting", "zo_website_setting_id", ZoWebsiteSetting.class);
 	}
 }

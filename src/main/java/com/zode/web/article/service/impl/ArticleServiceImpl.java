@@ -11,6 +11,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.zode.web.article.dto.ArticleVo;
 import com.zode.web.article.service.ArticleService;
 import com.zode.web.article.util.ColorGenerator;
+import com.zode.web.article.util.ColorUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,6 +51,7 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
     @Override
     public List<Record> queryAllTagStatics() {
         List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryAllTagStatics"));
+        list = list.stream().filter(l -> l.getInt("num") > 0).collect(Collectors.toList());
         return list;
     }
 
@@ -86,9 +88,18 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
         save.set("title",articleVo.getTitle());
         save.set("content",articleVo.getContent());
         save.set("summary",articleVo.getSummary());
-        save.set("tag_value",articleVo.getTagValue());
-        save.set("tag_text",articleVo.getTagText());
-        save.set("author_name",articleVo.getAuthorName());
+        if (StrKit.isNotBlank(articleVo.getTagValue())){
+            save.set("tag_value",articleVo.getTagValue());
+            save.set("tag_text",articleVo.getTagText());
+        }else{
+            save.set("tag_value","d1c6505e6c344859b1e40cfa82434a14");
+            save.set("tag_text","Java");
+        }
+        if (StrKit.isNotBlank(articleVo.getAuthorName())){
+            save.set("author_name",articleVo.getAuthorName());
+        }else{
+            save.set("author_name","Meking");
+        }
         if (isAdd){
             save.set("create_time", DateKit.getNowTime());
         }
@@ -98,7 +109,13 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
             save.set("publish_time", DateKit.getNowTime());
         }
         save.set("recommend_read_time", articleVo.getRecommendReadTime());
-        save.set("cover_gradient", articleVo.getCoverGradient());
+        if (StrKit.isNotBlank(articleVo.getCoverGradient())){
+            save.set("cover_gradient", articleVo.getCoverGradient());
+        }else{
+            String[] colors = ColorUtil.getRandomGradientHexColors();
+            String coverGradient = StrKit.format("linear-gradient(135deg, {} 0%, {} 100%)", colors[0], colors[1]);
+            save.set("cover_gradient", coverGradient);
+        }
         save.set("deleted", 0);
         save.set("files", articleVo.getFiles());
         if (isAdd){
