@@ -91,4 +91,18 @@ public abstract class BaseZoWebsiteNoteChapter<M extends BaseZoWebsiteNoteChapte
 		return getStr("content");
 	}
 	
+	/**
+	 * 是否完成本章节
+	 */
+	public void setComplete(java.lang.String complete) {
+		set("complete", complete);
+	}
+	
+	/**
+	 * 是否完成本章节
+	 */
+	public java.lang.String getComplete() {
+		return getStr("complete");
+	}
+	
 }

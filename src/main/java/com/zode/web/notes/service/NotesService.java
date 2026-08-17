@@ -78,4 +78,11 @@ public interface NotesService {
      * @return
      */
     Result deleteChapter(String id);
+
+    /**
+     * 完成本章节
+     * @param id
+     * @return
+     */
+    Result completeChapter(String id);
 }

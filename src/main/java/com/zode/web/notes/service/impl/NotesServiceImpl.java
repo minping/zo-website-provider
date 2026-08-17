@@ -13,6 +13,9 @@ import com.zode.web.notes.dto.NoteSaveVo;
 import com.zode.web.notes.service.NotesService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -119,6 +122,18 @@ public class NotesServiceImpl extends BaseService implements NotesService {
     @Override
     public Result queryNoteList() {
         List<Record> noteList = Db.find(Db.getSqlPara(SQL_KEY + "queryNoteList"));
+        List<Record> chapterList = Db.find(Db.getSqlPara(SQL_KEY + "queryChapterList"));
+        Map<String, List<Record>> chapterMap = chapterList.stream().collect(Collectors.groupingBy(c -> c.getStr("note_id")));
+        noteList.forEach(note -> {
+            List<Record> cList = chapterMap.getOrDefault(note.getStr("id"), new LinkedList<>());
+            if (cList.isEmpty()){
+                note.set("process",0);
+            }else{
+                long complete = cList.stream().filter(c -> "1".equals(c.getStr("complete"))).count();
+                BigDecimal process = new BigDecimal(complete).multiply(new BigDecimal(100)).divide(new BigDecimal(cList.size()), 2, RoundingMode.HALF_UP);
+                note.set("process",process.doubleValue());
+            }
+        });
         List<Map<String, Object>> result = noteList.stream().map(r -> r.getColumns()).collect(Collectors.toList());
         return success().setData(result);
     }
@@ -130,7 +145,19 @@ public class NotesServiceImpl extends BaseService implements NotesService {
      */
     @Override
     public Result queryNoteListPublished() {
-        List<Record> noteList = Db.find(Db.getSqlPara(SQL_KEY + "queryNoteListPublished"));
+        List<Record> noteList = Db.find(Db.getSqlPara(SQL_KEY + "queryNoteList",Kv.by("publish","1")));
+        List<Record> chapterList = Db.find(Db.getSqlPara(SQL_KEY + "queryChapterList"));
+        Map<String, List<Record>> chapterMap = chapterList.stream().collect(Collectors.groupingBy(c -> c.getStr("note_id")));
+        noteList.forEach(note -> {
+            List<Record> cList = chapterMap.getOrDefault(note.getStr("id"), new LinkedList<>());
+            if (cList.isEmpty()){
+                note.set("process",0);
+            }else{
+                long complete = cList.stream().filter(c -> "1".equals(c.getStr("complete"))).count();
+                BigDecimal process = new BigDecimal(complete).multiply(new BigDecimal(100)).divide(new BigDecimal(cList.size()), 2, RoundingMode.HALF_UP);
+                note.set("process",process.doubleValue());
+            }
+        });
         List<Map<String, Object>> result = noteList.stream().map(r -> r.getColumns()).collect(Collectors.toList());
         return success().setData(result);
     }
@@ -158,6 +185,7 @@ public class NotesServiceImpl extends BaseService implements NotesService {
             chapter.set("zo_website_note_chapter_id",chapterId);
             chapter.set("created_time", DateKit.getNowTime());
             chapter.set("updated_time", DateKit.getNowTime());
+            chapter.set("complete","0");
             Db.save("zo_website_note_chapter",chapter);
         }else{
             // 更新
@@ -208,6 +236,24 @@ public class NotesServiceImpl extends BaseService implements NotesService {
         Record note = new Record();
         note.set("zo_website_note_chapter_id",id);
         note.set("deleted","1");
+        Db.update("zo_website_note_chapter","zo_website_note_chapter_id",note);
+        return success();
+    }
+
+    /**
+     * 完成本章节
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Result completeChapter(String id) {
+        if (StrKit.isBlank(id)){
+            return error().setMessage("参数错误");
+        }
+        Record note = new Record();
+        note.set("zo_website_note_chapter_id",id);
+        note.set("complete","1");
         Db.update("zo_website_note_chapter","zo_website_note_chapter_id",note);
         return success();
     }
