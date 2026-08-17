@@ -67,4 +67,9 @@ public class NotesAdminController extends BaseController {
         return notesService.deleteChapter(id);
     }
 
+    @GetMapping("/completeChapter")
+    public Result completeChapter(String id){
+        return notesService.completeChapter(id);
+    }
+
 }
