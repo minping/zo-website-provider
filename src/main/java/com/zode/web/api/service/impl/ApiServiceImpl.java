@@ -111,7 +111,7 @@ public class ApiServiceImpl extends BaseService implements ApiService {
     @Override
     public Result queryApiList() {
         List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryApiList"));
-        return success().setData(list.stream().map(Record::getColumns).collect(Collectors.toList()));
+        return success().setData(list);
     }
 
     /**
@@ -125,7 +125,7 @@ public class ApiServiceImpl extends BaseService implements ApiService {
         Record api = Db.findById("zo_website_api", "zo_website_api_id", id);
         List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryApiParamList", Kv.by("apiId",id)));
         api.set("paramList",list.stream().map(Record::getColumns).collect(Collectors.toList()));
-        return success().setData(api.getColumns());
+        return success().setData(api);
     }
 
     /**
@@ -180,7 +180,7 @@ public class ApiServiceImpl extends BaseService implements ApiService {
     @Override
     public Result queryApiTagList() {
         List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryApiTagList"));
-        return success().setData(list.stream().map(Record::getColumns).collect(Collectors.toList()));
+        return success().setData(list);
     }
 
     /**
@@ -196,7 +196,7 @@ public class ApiServiceImpl extends BaseService implements ApiService {
         list.forEach(api ->{
             api.set("tags", this.getTagList(api.getStr("tag_value"),tagMap));
         });
-        return success().setData(list.stream().map(Record::getColumns).collect(Collectors.toList()));
+        return success().setData(list);
     }
 
     private List<Map<String,Object>> getTagList(String tagValue,  Map<String, Record> tagMap) {
@@ -232,6 +232,6 @@ public class ApiServiceImpl extends BaseService implements ApiService {
         list.forEach(api ->{
             api.set("tags", this.getTagList(api.getStr("tag_value"),tagMap));
         });
-        return success().setData(list.stream().map(Record::getColumns).collect(Collectors.toList()));
+        return success().setData(list);
     }
 }

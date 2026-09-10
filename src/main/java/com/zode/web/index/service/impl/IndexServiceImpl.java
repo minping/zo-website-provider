@@ -39,7 +39,7 @@ public class IndexServiceImpl extends BaseService implements IndexService {
         LocalDate endDate = LocalDate.now();
         long between = ChronoUnit.DAYS.between(startDate, endDate);
         statics.set("days",between);
-        return success().setData(statics.getColumns());
+        return success().setData(statics);
     }
 
     /**

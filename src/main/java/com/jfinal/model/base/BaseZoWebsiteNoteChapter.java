@@ -105,4 +105,28 @@ public abstract class BaseZoWebsiteNoteChapter<M extends BaseZoWebsiteNoteChapte
 		return getStr("complete");
 	}
 	
+	public void setTreePid(java.lang.String treePid) {
+		set("tree_pid", treePid);
+	}
+	
+	public java.lang.String getTreePid() {
+		return getStr("tree_pid");
+	}
+	
+	public void setTreeGlobalId(java.lang.String treeGlobalId) {
+		set("tree_global_id", treeGlobalId);
+	}
+	
+	public java.lang.String getTreeGlobalId() {
+		return getStr("tree_global_id");
+	}
+	
+	public void setTreeLevel(java.lang.Integer treeLevel) {
+		set("tree_level", treeLevel);
+	}
+	
+	public java.lang.Integer getTreeLevel() {
+		return getInt("tree_level");
+	}
+	
 }
