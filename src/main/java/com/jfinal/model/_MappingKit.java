@@ -30,6 +30,8 @@ public class _MappingKit {
 		arp.addMapping("zo_website_note", "zo_website_note_id", ZoWebsiteNote.class);
 		arp.addMapping("zo_website_note_chapter", "zo_website_note_chapter_id", ZoWebsiteNoteChapter.class);
 		arp.addMapping("zo_website_setting", "zo_website_setting_id", ZoWebsiteSetting.class);
+		arp.addMapping("zo_website_study_ban", "zo_website_study_ban_id", ZoWebsiteStudyBan.class);
+		arp.addMapping("zo_website_study_record", "zo_website_study_record_id", ZoWebsiteStudyRecord.class);
 	}
 }
 

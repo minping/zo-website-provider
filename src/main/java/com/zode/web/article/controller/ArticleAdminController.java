@@ -30,8 +30,7 @@ public class ArticleAdminController extends BaseController {
     @GetMapping("/queryAllTags")
     public Result queryAllTags(){
         List<Record> list = articleService.queryAllTags();
-        List<Map<String, Object>> res = list.stream().map(r -> r.getColumns()).collect(Collectors.toList());
-        return Result.me().success().setData(res);
+        return Result.me().success().setData(list);
     }
 
     @PostMapping("/insertTag")
@@ -53,14 +52,13 @@ public class ArticleAdminController extends BaseController {
     @GetMapping("/queryArticle")
     public Result queryArticle(String searchValue,String tag,String status){
         List<Record> list = articleService.queryArticle(searchValue, tag, status);
-        List<Map<String, Object>> res = list.stream().map(r -> r.getColumns()).collect(Collectors.toList());
-        return Result.me().success(res);
+        return Result.me().success(list);
     }
 
     @GetMapping("/queryArticleDetail")
     public Result queryArticleDetail(String id){
         Record detail = articleService.queryArticleDetail(id);
-        return Result.me().success(detail.getColumns());
+        return Result.me().success(detail);
     }
 
     @GetMapping("/dealArticle")
@@ -72,13 +70,13 @@ public class ArticleAdminController extends BaseController {
     @GetMapping("/queryArticleStatics")
     public Result queryArticleStatics(){
         Record record = articleService.queryArticleStatics();
-        return Result.me().success(record.getColumns());
+        return Result.me().success(record);
     }
 
     @GetMapping("/queryArticleDayStatics")
     public Result queryArticleDayStatics(){
         Record record = articleService.queryArticleDayStatics();
-        return Result.me().success(record.getColumns());
+        return Result.me().success(record);
     }
 
     @PostMapping("/uploadImage")

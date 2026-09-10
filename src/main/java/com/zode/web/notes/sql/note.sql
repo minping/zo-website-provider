@@ -11,13 +11,14 @@
     #end
 
     #sql("queryChapterList")
-        select zo_website_note_chapter_id as id,zo_website_note_id as note_id,title,orders,content,ifnull(complete,'0') as complete
+        select zo_website_note_chapter_id as id,zo_website_note_id as note_id,title,orders,content,ifnull(complete,'0') as complete,
+               tree_pid,tree_global_id,tree_level
         from zo_website_note_chapter
         where deleted = '0'
          #if(noteId)
          and zo_website_note_id = #para(noteId)
          #end
-        order by orders asc
+        order by tree_level asc,orders+0 asc
     #end
 
     #sql("queryChapter")
@@ -25,6 +26,31 @@
         from zo_website_note_chapter
         where deleted = '0'
           and zo_website_note_chapter_id = #para(id)
+    #end
+
+    #sql("queryStudyRecord")
+        select date_format(created_time,'%Y-%m-%d %H:%i') as study_time,date_format(created_time,'%Y-%m-%d') as day,timing from zo_website_study_record
+        where 1=1
+          #if(relationId)
+           and relation_id = #para(relationId)
+          #end
+        order by created_time desc
+    #end
+
+    #sql("getTodayNoStudy")
+        SELECT c.zo_website_note_chapter_id AS id,CONCAT(p.title,': ',c.title) AS title,c.content,n.author,n.name
+        FROM zo_website_note_chapter c
+         INNER JOIN zo_website_note n ON c.zo_website_note_id = n.zo_website_note_id
+         INNER JOIN zo_website_note_chapter p ON c.tree_pid = p.zo_website_note_chapter_id AND p.deleted = '0'
+        WHERE c.tree_level = '2'
+          AND c.deleted = '0'
+          AND c.content IS NOT NULL
+          AND c.complete = '1'
+          AND c.zo_website_note_chapter_id NOT IN (
+            SELECT relation_id FROM zo_website_study_record WHERE DATE_FORMAT(created_time,'%Y-%m-%d') = #para(today) AND relation_type_value = '2'
+            UNION
+            SELECT relation_id FROM zo_website_study_ban WHERE deleted = '0'
+        )
     #end
 
 #end

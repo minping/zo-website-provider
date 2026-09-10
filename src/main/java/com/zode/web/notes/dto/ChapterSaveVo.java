@@ -11,6 +11,8 @@ import lombok.Data;
 public class ChapterSaveVo {
 
     private String id;
+    private String pid;
+    private String level;
     private String noteId;
     private String title;
     private String orders;

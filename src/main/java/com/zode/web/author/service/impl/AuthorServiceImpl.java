@@ -143,8 +143,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Result queryProjectList(String authId) {
         List<Record> projectList = Db.find(Db.getSqlPara(SQL_KEY + "queryProjectList", Kv.by("authId", authId)));
-        List<Map<String, Object>> dataList = projectList.stream().map(r -> r.getColumns()).collect(Collectors.toList());
-        return Result.me().success().setData(dataList);
+        return Result.me().success().setData(projectList);
     }
 
     /**
@@ -156,7 +155,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Result queryProjectInfo(String id) {
         Record projectInfo = Db.findFirst(Db.getSqlPara(SQL_KEY + "queryProjectById", Kv.by("id", id)));
-        return Result.me().setData(projectInfo.getColumns());
+        return Result.me().setData(projectInfo);
     }
 
     /**
@@ -202,8 +201,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Result queryProductList(String authId) {
         List<Record> productList = Db.find(Db.getSqlPara(SQL_KEY + "queryProductList", Kv.by("authId", authId)));
-        List<Map<String, Object>> dataList = productList.stream().map(r -> r.getColumns()).collect(Collectors.toList());
-        return Result.me().success().setData(dataList);
+        return Result.me().success().setData(productList);
     }
 
     /**
@@ -215,6 +213,6 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Result queryProductInfo(String id) {
         Record productInfo = Db.findFirst(Db.getSqlPara(SQL_KEY + "queryProductById", Kv.by("id", id)));
-        return Result.me().setData(productInfo.getColumns());
+        return Result.me().setData(productInfo);
     }
 }

@@ -28,22 +28,19 @@ public class ArticleIndexController extends BaseController {
     @GetMapping("/queryAllTags")
     public Result queryAllTags(){
         List<Record> list = articleService.queryAllTags();
-        List<Map<String, Object>> res = list.stream().map(r -> r.getColumns()).collect(Collectors.toList());
-        return Result.me().success().setData(res);
+        return Result.me().success().setData(list);
     }
 
     @GetMapping("/queryAllTagStatics")
     public Result queryAllTagStatics(){
         List<Record> list = articleService.queryAllTagStatics();
-        List<Map<String, Object>> res = list.stream().map(r -> r.getColumns()).collect(Collectors.toList());
-        return Result.me().success().setData(res);
+        return Result.me().success().setData(list);
     }
 
     @GetMapping("/queryIndexArticle")
     public Result queryIndexArticle(){
         List<Record> list = articleService.queryIndexArticle();
-        List<Map<String, Object>> res = list.stream().map(r -> r.getColumns()).collect(Collectors.toList());
-        return Result.me().success().setData(res);
+        return Result.me().success().setData(list);
     }
 
 
@@ -55,14 +52,13 @@ public class ArticleIndexController extends BaseController {
     @GetMapping("/queryRecommendArticle")
     public Result queryRecommendArticle(String id){
         List<Record> list = articleService.queryRecommendArticle(id);
-        List<Map<String, Object>> res = list.stream().map(r -> r.getColumns()).collect(Collectors.toList());
-        return Result.me().success(res);
+        return Result.me().success(list);
     }
 
     @GetMapping("/queryArticleDetail")
     public Result queryArticleDetail(String id){
         Record detail = articleService.queryArticleDetail(id);
-        return Result.me().success(detail.getColumns());
+        return Result.me().success(detail);
     }
 
     @GetMapping("/viewArticle")
