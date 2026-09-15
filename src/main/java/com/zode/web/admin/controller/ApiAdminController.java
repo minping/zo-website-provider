@@ -1,4 +1,4 @@
-package com.zode.web.api.controller;
+package com.zode.web.admin.controller;
 
 import com.common.base.BaseController;
 import com.common.util.Result;

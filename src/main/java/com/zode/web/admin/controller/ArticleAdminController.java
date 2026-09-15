@@ -1,4 +1,4 @@
-package com.zode.web.article.controller;
+package com.zode.web.admin.controller;
 
 import com.common.base.BaseController;
 import com.common.util.Result;
@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.ws.rs.POST;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author zhoump
@@ -32,6 +29,7 @@ public class ArticleAdminController extends BaseController {
         List<Record> list = articleService.queryAllTags();
         return Result.me().success().setData(list);
     }
+
 
     @PostMapping("/insertTag")
     public Result insertTag(String tagName,String tagColor){
@@ -65,18 +63,6 @@ public class ArticleAdminController extends BaseController {
     public Result dealArticle(String id,String type){
         articleService.dealArticle(id,type);
         return Result.me().success();
-    }
-
-    @GetMapping("/queryArticleStatics")
-    public Result queryArticleStatics(){
-        Record record = articleService.queryArticleStatics();
-        return Result.me().success(record);
-    }
-
-    @GetMapping("/queryArticleDayStatics")
-    public Result queryArticleDayStatics(){
-        Record record = articleService.queryArticleDayStatics();
-        return Result.me().success(record);
     }
 
     @PostMapping("/uploadImage")

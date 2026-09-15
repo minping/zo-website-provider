@@ -91,10 +91,8 @@ public class AuthorServiceImpl implements AuthorService {
             return Result.me().success().setData(new HashMap<>());
         }
         List<Record> processList = Db.find(Db.getSqlPara(SQL_KEY + "queryProcessById", Kv.by("id", authInfo.getStr("id"))));
-        Map<String, Object> columns = authInfo.getColumns();
-        List<Map<String, Object>> pList = processList.stream().map(Record::getColumns).collect(Collectors.toList());
-        columns.put("processList",pList);
-        return Result.me().success().setData(columns);
+        authInfo.set("processList",processList);
+        return Result.me().success().setData(authInfo);
     }
 
     /**

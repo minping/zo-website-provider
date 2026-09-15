@@ -53,4 +53,17 @@
         )
     #end
 
+    #sql("queryNoteDay")
+        SELECT  DATE_FORMAT(nc.created_time,'%Y-%m-%d') AS day,COUNT(1) AS num,any_value(DATE_FORMAT(nc.created_time,'%Y-%m')) AS month
+        FROM zo_website_note_chapter nc
+                 INNER JOIN zo_website_note n ON nc.zo_website_note_id = n.zo_website_note_id AND n.deleted = '0'
+        WHERE nc.deleted = '0'
+          AND nc.tree_level = '2'
+          AND nc.content IS NOT NULL
+        GROUP BY DATE_FORMAT(nc.created_time,'%Y-%m-%d')
+    #end
+
+    #sql("querySonChapter")
+        select * from zo_website_note_chapter where tree_pid = #para(pid) and deleted = '0'
+    #end
 #end

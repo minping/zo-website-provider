@@ -8,7 +8,6 @@ import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.TreeInfo;
-import com.zode.web.article.dto.ApiParamDto;
 import com.zode.web.notes.dto.ChapterSaveVo;
 import com.zode.web.notes.dto.NoteSaveVo;
 import com.zode.web.notes.dto.StudyBanDto;
@@ -207,6 +206,9 @@ public class NotesServiceImpl extends BaseService implements NotesService {
             // 更新
             Db.update("zo_website_note_chapter","zo_website_note_chapter_id",chapter);
         }
+        // 更新笔记的修改时间
+        Record up = new Record().set("zo_website_note_id", chapterSaveVo.getNoteId()).set("updated_time", DateKit.getNowTime());
+        Db.update("zo_website_note","zo_website_note_id",up);
         return success();
     }
 
@@ -222,8 +224,7 @@ public class NotesServiceImpl extends BaseService implements NotesService {
         chapterList.forEach(c -> {
             if (c.get("children") != null){
                 List<Record> cl = c.get("children");
-                List<Map<String, Object>> clm = cl.stream().map(r -> r.getColumns()).collect(Collectors.toList());
-                c.set("children",clm);
+                c.set("children",cl);
             }
         });
         return success().setData(chapterList);
@@ -270,10 +271,22 @@ public class NotesServiceImpl extends BaseService implements NotesService {
         if (StrKit.isBlank(id)){
             return error().setMessage("参数错误");
         }
+        List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "querySonChapter", Kv.by("pid", id)));
+        List<Record> updateList = new LinkedList<>();
+        if (!list.isEmpty()){
+            // 完成章节顺带把下面的小节全部完成
+            list.forEach( l -> {
+                Record note = new Record();
+                note.set("zo_website_note_chapter_id",l.getStr("zo_website_note_chapter_id"));
+                note.set("complete","1");
+                updateList.add(note);
+            });
+        }
         Record note = new Record();
         note.set("zo_website_note_chapter_id",id);
         note.set("complete","1");
-        Db.update("zo_website_note_chapter","zo_website_note_chapter_id",note);
+        updateList.add(note);
+        Db.batchUpdate("zo_website_note_chapter","zo_website_note_chapter_id",updateList,20);
         return success();
     }
 
@@ -306,7 +319,7 @@ public class NotesServiceImpl extends BaseService implements NotesService {
     public Result queryStudyRecord(String relationId) {
         Record result = new Record();
         List<Record> recordList = Db.find(Db.getSqlPara(SQL_KEY + "queryStudyRecord", Kv.by("relationId", relationId)));
-        result.set("history",recordList.stream().map(Record::getColumns).collect(Collectors.toList()));
+        result.set("history",recordList);
         List<Record> totalList = Db.find(Db.getSqlPara(SQL_KEY + "queryStudyRecord"));
         String today = DateKit.formatDate2Str(new Date(), DateKit.YYYY_MM_DD);
         long todayCount = totalList.stream().filter(r -> StrKit.equals(r.getStr("day"), today)).count();
@@ -379,5 +392,45 @@ public class NotesServiceImpl extends BaseService implements NotesService {
         save.set("deleted","0");
         Db.save("zo_website_study_ban",save);
         return success();
+    }
+
+    /**
+     * 控制面板统计相关
+     *
+     * @return
+     */
+    @Override
+    public Result queryNoteStatics(String month) {
+        List<Record> noteList = Db.find(Db.getSqlPara(SQL_KEY + "queryNoteList"));
+        List<Record> chapterList = Db.find(Db.getSqlPara(SQL_KEY + "queryChapterList"));
+        Map<String, List<Record>> chapterMap = chapterList.stream().collect(Collectors.groupingBy(c -> c.getStr("note_id")));
+        noteList.forEach(note -> {
+            List<Record> cList = chapterMap.getOrDefault(note.getStr("id"), new LinkedList<>());
+            if (cList.isEmpty()){
+                note.set("process",0);
+                note.set("chapter_num",0);
+                note.set("section_num",0);
+            }else{
+                long complete = cList.stream().filter(c -> "1".equals(c.getStr("complete"))).count();
+                BigDecimal process = new BigDecimal(complete).multiply(new BigDecimal(100)).divide(new BigDecimal(cList.size()), 2, RoundingMode.HALF_UP);
+                note.set("process",process.doubleValue());
+                note.set("chapter_num",cList.stream().filter(c -> "1".equals(c.getStr("tree_level"))).count());
+                note.set("section_num",cList.stream().filter(c -> "2".equals(c.getStr("tree_level"))).count());
+            }
+        });
+        long finish = noteList.stream().filter(note -> Double.compare(Double.parseDouble(note.getStr("process")), (double) 100) == 0).count();
+        Record result = new Record();
+        result.set("total",noteList.size());
+        result.set("studying",noteList.size() - finish);
+        result.set("finish",finish);
+        // 本月学习天数
+        List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryNoteDay"));
+        String thisMonth = DateKit.formatDate2Str(new Date(), "yyyy-MM");
+        long count = list.stream().filter(d -> StrKit.equals(thisMonth, d.getStr("month"))).count();
+        result.set("monthStudy",count);
+        // 日历图
+        List<Record> dayList = list.stream().filter(d -> StrKit.equals(month, d.getStr("month"))).collect(Collectors.toList());
+        result.set("days",dayList);
+        return success().setData(result);
     }
 }
