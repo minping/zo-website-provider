@@ -114,4 +114,12 @@ public interface NotesService {
      * @return
      */
     Result saveStudyBan(StudyBanDto studyBanDto);
+
+    /**
+     * 控制面板统计相关
+     *
+     * @return
+     */
+    Result queryNoteStatics(String month);
+
 }

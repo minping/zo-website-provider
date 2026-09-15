@@ -239,8 +239,8 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
     public Result uploadImage(MultipartFile file) {
         Result result = fileStorageService.uploadFile(file);
         if (result.isSuccess()){
-            Map<String,Object> data = (Map<String,Object>) result.getData();
-            return success().setData(Kv.by("url",serverPath + "/file/download/" +  data.get("zo_file_id").toString()));
+            Record data = (Record) result.getData();
+            return success().setData(Kv.by("url",serverPath + "/file/download/" +  data.getStr("zo_file_id")));
         }else {
             return result;
         }
@@ -264,7 +264,7 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
         }
         kv.set("status_value","1");
         List<Record> articleList = Db.find(Db.getSqlPara(SQL_KEY + "queryArticle", kv));
-        Map<String, List<Map<String, Object>>> res = articleList.stream().collect(Collectors.groupingBy(a -> a.getStr("tag_text"), Collectors.mapping(r -> r.getColumns(), Collectors.toList())));
+        Map<String, List<Record>> res = articleList.stream().collect(Collectors.groupingBy(a -> a.getStr("tag_text"), Collectors.mapping(r -> r, Collectors.toList())));
         return Result.me().setData(res);
     }
 

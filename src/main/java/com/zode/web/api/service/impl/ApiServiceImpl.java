@@ -124,7 +124,7 @@ public class ApiServiceImpl extends BaseService implements ApiService {
     public Result queryApiById(String id) {
         Record api = Db.findById("zo_website_api", "zo_website_api_id", id);
         List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryApiParamList", Kv.by("apiId",id)));
-        api.set("paramList",list.stream().map(Record::getColumns).collect(Collectors.toList()));
+        api.set("paramList",list);
         return success().setData(api);
     }
 
@@ -199,13 +199,13 @@ public class ApiServiceImpl extends BaseService implements ApiService {
         return success().setData(list);
     }
 
-    private List<Map<String,Object>> getTagList(String tagValue,  Map<String, Record> tagMap) {
+    private List<Record> getTagList(String tagValue,  Map<String, Record> tagMap) {
         if (StrKit.isBlank(tagValue)) return Collections.emptyList();
-        List<Map<String,Object>> result = new LinkedList<>();
+        List<Record> result = new LinkedList<>();
         String[] tagArr = tagValue.split("\\^");
         for (String id : tagArr) {
             Record tag = tagMap.get(id);
-            result.add(tag.getColumns());
+            result.add(tag);
         }
         return result;
     }
