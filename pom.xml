@@ -28,6 +28,13 @@
             <version>1.0-SNAPSHOT</version> <!-- 版本与父项目保持一致 -->
         </dependency>
 
+
+        <!-- commonmark core -->
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>0.21.0</version>
+        </dependency>
     </dependencies>
 
     <build>

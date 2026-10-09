@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 页面不存在</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            min-height: 100vh;
+            /* 柔和浅灰背景，不刺眼 */
+            background-color: #f7f8fa;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            max-width: 480px;
+        }
+        .code {
+            font-size: 120px;
+            font-weight: 300;
+            color: #cbd5e1;
+            line-height: 1;
+        }
+        .title {
+            font-size: 24px;
+            color: #334155;
+            margin: 12px 0 10px;
+        }
+        .desc {
+            font-size: 16px;
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background-color: #4f46e5;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.25s ease;
+        }
+        .btn:hover {
+            background-color: #4338ca;
+        }
+        /* 轻微浮动动画，很柔和不浮夸 */
+        @keyframes float {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .float-box {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+<div class="container float-box">
+    <div class="code">404</div>
+    <h1 class="title">抱歉，访问的页面不存在</h1>
+    <p class="desc">
+        可能是链接已失效、地址输入错误，或者页面已被移除。
+    </p>
+    <a href="https://www.mpgapay.cn/" class="btn">返回首页</a>
+</div>
+</body>
+</html>
