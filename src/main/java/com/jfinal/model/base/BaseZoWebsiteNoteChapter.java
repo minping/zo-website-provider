@@ -129,4 +129,32 @@ public abstract class BaseZoWebsiteNoteChapter<M extends BaseZoWebsiteNoteChapte
 		return getInt("tree_level");
 	}
 	
+	/**
+	 * 字数
+	 */
+	public void setTextCharCount(java.lang.Long textCharCount) {
+		set("text_char_count", textCharCount);
+	}
+	
+	/**
+	 * 字数
+	 */
+	public java.lang.Long getTextCharCount() {
+		return getLong("text_char_count");
+	}
+	
+	/**
+	 * 代码行数
+	 */
+	public void setCodeLineCount(java.lang.Long codeLineCount) {
+		set("code_line_count", codeLineCount);
+	}
+	
+	/**
+	 * 代码行数
+	 */
+	public java.lang.Long getCodeLineCount() {
+		return getLong("code_line_count");
+	}
+	
 }

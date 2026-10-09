@@ -106,7 +106,7 @@ public interface NotesService {
      * 随机获取一篇笔记小节
      * @return
      */
-    Result getRandomContent();
+    Result getRandomContent(String noteId);
 
     /**
      * 斩杀不需要复习的知识
@@ -122,4 +122,16 @@ public interface NotesService {
      */
     Result queryNoteStatics(String month);
 
+    /**
+     * 批量计算笔记
+     * @return
+     */
+    Result batchCountMd();
+
+    /**
+     * 获取笔记时间线
+     * @param noteId
+     * @return
+     */
+    Result getNoteLine(String noteId);
 }

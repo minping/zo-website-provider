@@ -18,7 +18,7 @@
     #end
 
     #sql("queryArticle")
-        select zo_website_article_id,title,content,tag_value,tag_text,author_name,date_format(create_time,'%Y-%m-%d %H:%i') create_time,
+        select zo_website_article_id,title,tag_value,tag_text,author_name,date_format(create_time,'%Y-%m-%d %H:%i') create_time,
                date_format(publish_time,'%Y-%m-%d %H:%i') as publish_time,recommend_read_time,cover_gradient,summary,ifnull(like_count,0) as like_count,
                ifnull(view_count,0) as view_count,status_value,status_text,sort_order
         from zo_website_article
@@ -30,7 +30,7 @@
     #end
 
     #sql("queryRecommendArticle")
-        select zo_website_article_id,title,content,tag_value,tag_text,author_name,date_format(create_time,'%Y-%m-%d %H:%i') create_time,
+        select zo_website_article_id,title,tag_value,tag_text,author_name,date_format(create_time,'%Y-%m-%d %H:%i') create_time,
                date_format(publish_time,'%Y-%m-%d %H:%i') as publish_time,date_format(publish_time,'%Y-%m-%d') as publish_day,
                recommend_read_time,cover_gradient,summary,ifnull(like_count,0) as like_count,
                ifnull(view_count,0) as view_count,status_value,status_text,sort_order
@@ -43,7 +43,7 @@
     #end
 
     #sql("queryIndexArticle")
-        select zo_website_article_id,title,content,tag_value,tag_text,author_name,date_format(create_time,'%Y-%m-%d') create_time,
+        select zo_website_article_id,title,tag_value,tag_text,author_name,date_format(create_time,'%Y-%m-%d') create_time,
                date_format(publish_time,'%Y-%m-%d') as publish_time,recommend_read_time,cover_gradient,summary,ifnull(like_count,0) as like_count,
                ifnull(view_count,0) as view_count,status_value,status_text,sort_order
         from zo_website_article

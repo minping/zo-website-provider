@@ -54,12 +54,22 @@ public class NotesIndexController extends BaseController {
     }
 
     @GetMapping("/getRandomContent")
-    public Result getRandomContent(){
-        return notesService.getRandomContent();
+    public Result getRandomContent(String noteId){
+        return notesService.getRandomContent(noteId);
     }
 
     @PostMapping("/saveStudyBan")
     public Result saveStudyBan(@RequestBody StudyBanDto studyBanDto){
         return notesService.saveStudyBan(studyBanDto);
+    }
+
+    @GetMapping("/batchCountMd")
+    public Result batchCountMd(){
+        return notesService.batchCountMd();
+    }
+
+    @GetMapping("/getNoteLine")
+    public Result getNoteLine(String noteId){
+        return notesService.getNoteLine(noteId);
     }
 }

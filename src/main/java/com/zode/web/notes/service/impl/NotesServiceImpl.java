@@ -8,15 +8,15 @@ import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.TreeInfo;
-import com.zode.web.notes.dto.ChapterSaveVo;
-import com.zode.web.notes.dto.NoteSaveVo;
-import com.zode.web.notes.dto.StudyBanDto;
-import com.zode.web.notes.dto.StudyRecordDto;
+import com.zode.web.notes.dto.*;
 import com.zode.web.notes.service.NotesService;
+import com.zode.web.notes.util.CommonMarkMdStat;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -161,6 +161,8 @@ public class NotesServiceImpl extends BaseService implements NotesService {
                 note.set("process",process.doubleValue());
                 note.set("chapter_num",cList.stream().filter(c -> "1".equals(c.getStr("tree_level"))).count());
                 note.set("section_num",cList.stream().filter(c -> "2".equals(c.getStr("tree_level"))).count());
+                note.set("text_char_count",cList.stream().filter(c -> c.get("text_char_count")!= null).map(c->c.getLong("text_char_count")).reduce(0L,Long::sum));
+                note.set("code_line_count",cList.stream().filter(c -> c.getStr("code_line_count")!= null).map(c->c.getLong("code_line_count")).reduce(0L,Long::sum));
             }
         });
         return success().setData(noteList);
@@ -196,6 +198,15 @@ public class NotesServiceImpl extends BaseService implements NotesService {
             chapter.set("tree_pid",null);
             chapter.set("tree_global_id",chapterId);
             chapter.set("tree_level",1);
+        }
+        // 计算字数以及代码行数
+        if (StrKit.isNotBlank(chapterSaveVo.getContent())){
+            CommonMarkMdStat.Count count = CommonMarkMdStat.readMarkDown(chapterSaveVo.getContent());
+            chapter.set("text_char_count",count.textCharCount);
+            chapter.set("code_line_count",count.codeLineCount);
+        }else{
+            chapter.set("text_char_count",0);
+            chapter.set("code_line_count",0);
         }
         if (StrKit.isBlank(chapterSaveVo.getId())){
             // 新增
@@ -355,11 +366,23 @@ public class NotesServiceImpl extends BaseService implements NotesService {
      * @return
      */
     @Override
-    public Result getRandomContent() {
+    public Result getRandomContent(String noteId) {
         String today = DateKit.formatDate2Str(new Date(), DateKit.YYYY_MM_DD);
-        List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "getTodayNoStudy", Kv.by("today", today)));
+        Kv para = Kv.by("today", today);
+        if(StrKit.isNotBlank(noteId)){
+            // 选择某一篇笔记
+            para.set("noteId",noteId);
+        }
+        List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "getTodayNoStudy", para));
+        if (list.isEmpty()) {
+            // 今日没有可学习的小节（都已打卡或已斩杀）：返回业务提示，避免 randomInt(-1) 抛异常导致 500
+            return Result.me().error().setMessage(StrKit.isNotBlank(noteId)
+                    ? "这篇笔记今天没有可学习的小节了，换一篇试试吧"
+                    : "今天没有可学习的小节了，明天再来吧");
+        }
         int index = randomInt(list.size()-1);
-        return success().setData(list.get(index));
+        Record record = Db.findFirst(Db.getSqlPara(SQL_KEY + "getTodayNoStudyById", Kv.by("id", list.get(index).getStr("id"))));
+        return success().setData(record);
     }
 
     /**
@@ -432,5 +455,66 @@ public class NotesServiceImpl extends BaseService implements NotesService {
         List<Record> dayList = list.stream().filter(d -> StrKit.equals(month, d.getStr("month"))).collect(Collectors.toList());
         result.set("days",dayList);
         return success().setData(result);
+    }
+
+    /**
+     * 批量计算笔记
+     *
+     * @return
+     */
+    @Override
+    public Result batchCountMd() {
+        List<Record> chapterList = Db.find(Db.getSqlPara(SQL_KEY + "queryChapterList"));
+        List<Record> upList = chapterList.stream().map(c -> {
+            Record up = new Record();
+            // 计算字数以及代码行数
+            CommonMarkMdStat.Count count = CommonMarkMdStat.readMarkDown(c.getStr("content"));
+            if ( StrKit.isNotBlank(c.getStr("content"))){
+                up.set("text_char_count", count.textCharCount);
+                up.set("code_line_count", count.codeLineCount);
+            }else{
+                up.set("text_char_count", 0);
+                up.set("code_line_count", 0);
+            }
+            up.set("zo_website_note_chapter_id", c.getStr("id"));
+            return up;
+        }).collect(Collectors.toList());
+        Db.batchUpdate("zo_website_note_chapter","zo_website_note_chapter_id",upList,50);
+        return success();
+    }
+
+    /**
+     * 获取笔记时间线
+     *
+     * @param noteId
+     * @return
+     */
+    @Override
+    public Result getNoteLine(String noteId) {
+        if (StrKit.isBlank(noteId)){
+            return error().setMessage("参数错误");
+        }
+        StudyLineDto studyLineDto = new StudyLineDto();
+        Record note =  Db.findById("zo_website_note", "zo_website_note_id", noteId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(note.getStr("created_time"), formatter);
+        studyLineDto.setStartTime(localDateTime.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")));
+        studyLineDto.setName(note.getStr("name"));
+        List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryNoteLine", Kv.by("noteId", noteId)));
+        if (!list.isEmpty()){
+            Map<String, List<Record>> lineTimeMap = list.stream().collect(Collectors.groupingBy(l -> l.getStr("line_time")));
+            List<Line> lineList = lineTimeMap.entrySet().stream().map(entry -> {
+                Line line = new Line();
+                line.setLineTime(entry.getKey());
+                line.setLineMonth(entry.getValue().get(0).getStr("line_month"));
+                List<Content> contentList = entry.getValue().stream()
+                        .map(r -> new Content(r.getStr("id"), r.getStr("title"), r.getStr("complete")))
+                        .collect(Collectors.toList());
+                line.setContentList(contentList);
+                return line;
+            }).collect(Collectors.toList());
+            studyLineDto.setLineList(lineList);
+        }
+        return success().setData(studyLineDto);
     }
 }
