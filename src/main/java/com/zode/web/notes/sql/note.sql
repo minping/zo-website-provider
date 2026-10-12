@@ -12,7 +12,7 @@
 
     #sql("queryChapterList")
         select zo_website_note_chapter_id as id,zo_website_note_id as note_id,title,orders,ifnull(complete,'0') as complete,
-               tree_pid,tree_global_id,tree_level,text_char_count,code_line_count
+               tree_pid,tree_global_id,tree_level,text_char_count,code_line_count,complete
         from zo_website_note_chapter
         where deleted = '0'
          #if(noteId)

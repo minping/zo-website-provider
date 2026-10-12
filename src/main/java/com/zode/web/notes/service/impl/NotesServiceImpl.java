@@ -220,7 +220,8 @@ public class NotesServiceImpl extends BaseService implements NotesService {
         // 更新笔记的修改时间
         Record up = new Record().set("zo_website_note_id", chapterSaveVo.getNoteId()).set("updated_time", DateKit.getNowTime());
         Db.update("zo_website_note","zo_website_note_id",up);
-        return success();
+        // 返回章节 id：前端保存成功后据此自动定位到该章节（新建时为全新 id）
+        return success(chapterId);
     }
 
     /**
@@ -232,12 +233,6 @@ public class NotesServiceImpl extends BaseService implements NotesService {
     @Override
     public Result queryChapterList(String noteId) {
         List<Record> chapterList = Db.findTree(new TreeInfo("id", "tree_pid"), Db.getSqlPara(SQL_KEY + "queryChapterList", Kv.by("noteId", noteId)));
-        chapterList.forEach(c -> {
-            if (c.get("children") != null){
-                List<Record> cl = c.get("children");
-                c.set("children",cl);
-            }
-        });
         return success().setData(chapterList);
     }
 
