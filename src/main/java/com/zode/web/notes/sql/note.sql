@@ -68,10 +68,20 @@
     #sql("queryNoteDay")
         SELECT  DATE_FORMAT(nc.created_time,'%Y-%m-%d') AS day,COUNT(1) AS num,any_value(DATE_FORMAT(nc.created_time,'%Y-%m')) AS month
         FROM zo_website_note_chapter nc
-                 INNER JOIN zo_website_note n ON nc.zo_website_note_id = n.zo_website_note_id AND n.deleted = '0'
+         INNER JOIN zo_website_note n ON nc.zo_website_note_id = n.zo_website_note_id AND n.deleted = '0'
         WHERE nc.deleted = '0'
           AND nc.tree_level = '2'
           AND nc.content IS NOT NULL
+        GROUP BY DATE_FORMAT(nc.created_time,'%Y-%m-%d')
+    #end
+
+    #sql("queryReviewDay")
+        SELECT  DATE_FORMAT(nc.created_time,'%Y-%m-%d') AS day,COUNT(1) AS num,any_value(DATE_FORMAT(nc.created_time,'%Y-%m')) AS month
+        FROM zo_website_study_record nc
+        WHERE nc.deleted = '0'
+        #if(month)
+        and DATE_FORMAT(nc.created_time,'%Y-%m') = #para(month)
+        #end
         GROUP BY DATE_FORMAT(nc.created_time,'%Y-%m-%d')
     #end
 
