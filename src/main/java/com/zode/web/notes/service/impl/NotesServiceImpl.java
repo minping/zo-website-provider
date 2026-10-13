@@ -446,9 +446,12 @@ public class NotesServiceImpl extends BaseService implements NotesService {
         String thisMonth = DateKit.formatDate2Str(new Date(), "yyyy-MM");
         long count = list.stream().filter(d -> StrKit.equals(thisMonth, d.getStr("month"))).count();
         result.set("monthStudy",count);
-        // 日历图
+        // 学习日历图
         List<Record> dayList = list.stream().filter(d -> StrKit.equals(month, d.getStr("month"))).collect(Collectors.toList());
         result.set("days",dayList);
+        // 复习日历
+        List<Record> reviewList = Db.find(Db.getSqlPara(SQL_KEY + "queryReviewDay",Kv.by("month",month)));
+        result.set("reviewDays",reviewList);
         return success().setData(result);
     }
 
