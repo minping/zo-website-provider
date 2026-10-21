@@ -79,4 +79,102 @@ public abstract class BaseZoWebsiteStudyRecord<M extends BaseZoWebsiteStudyRecor
 		return getStr("deleted");
 	}
 	
+	/**
+	 * 标记状态
+	 */
+	public void setRatingValue(java.lang.String ratingValue) {
+		set("rating_value", ratingValue);
+	}
+	
+	/**
+	 * 标记状态
+	 */
+	public java.lang.String getRatingValue() {
+		return getStr("rating_value");
+	}
+	
+	/**
+	 * 标记状态
+	 */
+	public void setRatingText(java.lang.String ratingText) {
+		set("rating_text", ratingText);
+	}
+	
+	/**
+	 * 标记状态
+	 */
+	public java.lang.String getRatingText() {
+		return getStr("rating_text");
+	}
+	
+	/**
+	 * 难度
+	 */
+	public void setDifficulty(java.lang.String difficulty) {
+		set("difficulty", difficulty);
+	}
+	
+	/**
+	 * 难度
+	 */
+	public java.lang.String getDifficulty() {
+		return getStr("difficulty");
+	}
+	
+	/**
+	 * 稳定性
+	 */
+	public void setStability(java.lang.String stability) {
+		set("stability", stability);
+	}
+	
+	/**
+	 * 稳定性
+	 */
+	public java.lang.String getStability() {
+		return getStr("stability");
+	}
+	
+	/**
+	 * 下次复习时间
+	 */
+	public void setNextReview(java.util.Date nextReview) {
+		set("next_review", nextReview);
+	}
+	
+	/**
+	 * 下次复习时间
+	 */
+	public java.util.Date getNextReview() {
+		return get("next_review");
+	}
+	
+	/**
+	 * 是否处于短期学习阶段
+	 */
+	public void setLearningPhase(java.lang.String learningPhase) {
+		set("learning_phase", learningPhase);
+	}
+	
+	/**
+	 * 是否处于短期学习阶段
+	 */
+	public java.lang.String getLearningPhase() {
+		return getStr("learning_phase");
+	}
+	
+	/**
+	 * 复习次数
+	 */
+	public void setReviewCount(java.lang.String reviewCount) {
+		set("review_count", reviewCount);
+	}
+	
+	/**
+	 * 复习次数
+	 */
+	public java.lang.String getReviewCount() {
+		return getStr("review_count");
+	}
+	
 }

@@ -8,13 +8,21 @@ import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.TreeInfo;
+import com.zode.web.fsrs.calculator.FSRSCurveCalculator;
+import com.zode.web.fsrs.dto.CardState;
+import com.zode.web.fsrs.dto.ReviewRecord;
+import com.zode.web.fsrs.dto.Series;
+import com.zode.web.fsrs.service.FsrsService;
+import com.zode.web.fsrs.dto.Rating;
 import com.zode.web.notes.dto.*;
 import com.zode.web.notes.service.NotesService;
 import com.zode.web.notes.util.CommonMarkMdStat;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -27,6 +35,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class NotesServiceImpl extends BaseService implements NotesService {
+
+    @Resource
+    FsrsService fsrsService;
 
     private final String SQL_KEY = "web.notes.sql.";
 
@@ -304,6 +315,25 @@ public class NotesServiceImpl extends BaseService implements NotesService {
      */
     @Override
     public Result saveStudyRecord(StudyRecordDto studyRecordDto) {
+        CardState cardState;
+        int reviewCount;
+        Rating rating = Rating.of(Integer.parseInt(studyRecordDto.getRatingValue()));
+        if (studyRecordDto.isFirst()){
+            // 首次学习
+            cardState = fsrsService.firstLearn(rating);
+            reviewCount = 1;
+        }else{
+            // 多次复习 寻找上次学习fsrs卡片数据
+            Record lastRecord = Db.findFirst(Db.getSqlPara(SQL_KEY + "queryLastStudyRecord", Kv.by("relationId", studyRecordDto.getRelationId())));
+            CardState card = new CardState();
+            card.setLastReview(lastRecord.get("created_time"));
+            card.setDifficulty(Double.parseDouble(lastRecord.getStr("difficulty")));
+            card.setStability(Double.parseDouble(lastRecord.getStr("stability")));
+            card.setLearningPhase(Boolean.parseBoolean(lastRecord.getStr("learning_phase")));
+            card.setReviewCount(Integer.parseInt(lastRecord.getStr("review_count")));
+            cardState = fsrsService.reviewCard(card,rating);
+            reviewCount = Integer.parseInt(lastRecord.getStr("review_count")) + 1;
+        }
         Record save = new Record();
         save.set("zo_website_study_record_id",StrKit.uuid());
         save.set("created_time",new Date());
@@ -311,6 +341,15 @@ public class NotesServiceImpl extends BaseService implements NotesService {
         save.set("relation_type_text",studyRecordDto.getRelationTypeText());
         save.set("relation_type_value",studyRecordDto.getRelationTypeValue());
         save.set("timing",studyRecordDto.getTiming());
+        save.set("deleted","0");
+        // fsrs卡片模型持久化
+        save.set("rating_value",studyRecordDto.getRatingValue());
+        save.set("rating_text",studyRecordDto.getRatingText());
+        save.set("difficulty",String.format("%.4f", cardState.getDifficulty()));
+        save.set("stability",String.format("%.4f",cardState.getStability()));
+        save.set("next_review",String.valueOf(cardState.getNextReview()));
+        save.set("learning_phase",String.valueOf(cardState.isLearningPhase()));
+        save.set("review_count",String.valueOf(reviewCount));
         Db.save("zo_website_study_record",save);
         return success();
     }
@@ -325,17 +364,50 @@ public class NotesServiceImpl extends BaseService implements NotesService {
     public Result queryStudyRecord(String relationId) {
         Record result = new Record();
         List<Record> recordList = Db.find(Db.getSqlPara(SQL_KEY + "queryStudyRecord", Kv.by("relationId", relationId)));
-        result.set("history",recordList);
-        List<Record> totalList = Db.find(Db.getSqlPara(SQL_KEY + "queryStudyRecord"));
-        String today = DateKit.formatDate2Str(new Date(), DateKit.YYYY_MM_DD);
-        long todayCount = totalList.stream().filter(r -> StrKit.equals(r.getStr("day"), today)).count();
-        result.set("todayCount",todayCount);
-        result.set("totalCount",totalList.size());
-        long totalTiming = totalList.stream().map(r->Long.parseLong(r.getStr("timing"))).reduce(0L,Long::sum);
+        if (!recordList.isEmpty()){
+            // 起点
+            String firstDay = recordList.get(0).getStr("day");
+            List<ReviewRecord> reviewRecordList = recordList.stream().map(r -> {
+                int days = countPastDay(r.getStr("day"), firstDay);
+                return new ReviewRecord(days, Integer.parseInt(r.getStr("rating_value")));
+            }).distinct()
+                .collect(Collectors.toList());
+            Map<String, List<Series>> line = FSRSCurveCalculator.parseLine(reviewRecordList);
+            result.set("line",line);
+        }
+        // 推荐下次复习时间：取该小节最新一条学习记录里的 next_review（FSRS 调度结果）
+        Record lastRecord = Db.findFirst(Db.getSqlPara(SQL_KEY + "queryLastStudyRecord", Kv.by("relationId", relationId)));
+        String nextReviewTime = "";
+        if (lastRecord != null && lastRecord.get("next_review") != null) {
+            // LocalDateTime 字符串形如 2026-10-21T10:30:00.123，规整为 yyyy-MM-dd HH:mm
+            String raw = lastRecord.getStr("next_review").replace("T", " ");
+            nextReviewTime = raw.length() > 16 ? raw.substring(0, 16) : raw;
+        }
+        result.set("nextReviewTime",nextReviewTime);
+        long totalTiming = recordList.stream().map(r->Long.parseLong(r.getStr("timing"))).reduce(0L,Long::sum);
         result.set("totalTiming",secondToHms(totalTiming));
-        Optional<Record> optional = recordList.stream().filter(r -> StrKit.equals(r.getStr("day"), today)).findAny();
-        result.set("totalStatus",optional.isPresent());
+        // 累计学习次数：该小节的历史学习记录条数
+        result.set("totalCount",recordList.size());
         return success().setData(result);
+    }
+
+    /**
+     * 计算天数：day1 >= day2，格式 yyyy-MM-dd
+     * day1 == day2 返回 1
+     * 例：day2=2026-10-20, day1=2026-10-20 → 1
+     *     day2=2026-10-20, day1=2026-10-21 → 2
+     */
+    public int countPastDay(String day1, String day2) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate d1 = LocalDate.parse(day1, formatter);
+        LocalDate d2 = LocalDate.parse(day2, formatter);
+        // 校验，按你前提 day1 >= day2，这里加个保护
+        if (d1.isBefore(d2)) {
+            throw new IllegalArgumentException("day1 不能小于 day2");
+        }
+        // ChronoUnit.between 得到间隔天数（不含起始当天），+1 满足同天返回1
+        long days = java.time.temporal.ChronoUnit.DAYS.between(d2, d1) + 1;
+        return (int) days;
     }
 
     /**
@@ -343,7 +415,7 @@ public class NotesServiceImpl extends BaseService implements NotesService {
      * @param totalSeconds 总秒数
      * @return HH:mm:ss
      */
-    public static String secondToHms(long totalSeconds) {
+    public String secondToHms(long totalSeconds) {
         if (totalSeconds < 0) {
             return "00:00:00";
         }

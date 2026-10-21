@@ -29,12 +29,11 @@
     #end
 
     #sql("queryStudyRecord")
-        select date_format(created_time,'%Y-%m-%d %H:%i') as study_time,date_format(created_time,'%Y-%m-%d') as day,timing from zo_website_study_record
-        where 1=1
-          #if(relationId)
+        select date_format(created_time,'%Y-%m-%d %H:%i') as study_time,date_format(created_time,'%Y-%m-%d') as day,timing,rating_value
+        from zo_website_study_record
+        where deleted = '0'
            and relation_id = #para(relationId)
-          #end
-        order by created_time desc
+        order by created_time asc
     #end
 
     #sql("getTodayNoStudy")
@@ -83,6 +82,7 @@
         and DATE_FORMAT(nc.created_time,'%Y-%m') = #para(month)
         #end
         GROUP BY DATE_FORMAT(nc.created_time,'%Y-%m-%d')
+        ORDER BY DATE_FORMAT(nc.created_time,'%Y-%m-%d') DESC
     #end
 
     #sql("querySonChapter")
@@ -101,4 +101,9 @@
           AND n.zo_website_note_id = #para(noteId)
         ORDER BY c.created_time ASC
     #end
+
+    #sql("queryLastStudyRecord")
+        SELECT * FROM zo_website_study_record WHERE deleted = '0' AND relation_id = #para(relationId) ORDER BY created_time DESC
+    #end
+
 #end
