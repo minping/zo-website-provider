@@ -3,8 +3,6 @@ package com.zode.web.notes.service;
 import com.common.util.Result;
 import com.zode.web.notes.dto.ChapterSaveVo;
 import com.zode.web.notes.dto.NoteSaveVo;
-import com.zode.web.notes.dto.StudyBanDto;
-import com.zode.web.notes.dto.StudyRecordDto;
 
 /**
  * @author zhoump
@@ -89,31 +87,10 @@ public interface NotesService {
     Result completeChapter(String id);
 
     /**
-     * 学习打卡
-     * @param studyRecordDto
-     * @return
-     */
-    Result saveStudyRecord(StudyRecordDto studyRecordDto);
-
-    /**
-     * 查询历史学习打卡记录
-     * @param relationId
-     * @return
-     */
-    Result queryStudyRecord(String relationId);
-
-    /**
      * 随机获取一篇笔记小节
      * @return
      */
     Result getRandomContent(String noteId);
-
-    /**
-     * 斩杀不需要复习的知识
-     * @param studyBanDto
-     * @return
-     */
-    Result saveStudyBan(StudyBanDto studyBanDto);
 
     /**
      * 控制面板统计相关

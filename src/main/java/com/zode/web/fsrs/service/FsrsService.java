@@ -44,4 +44,8 @@ public class FsrsService {
     public boolean isDue(CardState card) {
         return LocalDateTime.now().isAfter(card.getNextReview());
     }
+
+    public boolean isMemoryFirm(CardState card){
+        return calculator.isMemoryFirm(card,LocalDateTime.now());
+    }
 }

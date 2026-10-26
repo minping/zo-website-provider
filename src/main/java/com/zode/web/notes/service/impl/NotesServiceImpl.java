@@ -308,126 +308,6 @@ public class NotesServiceImpl extends BaseService implements NotesService {
     }
 
     /**
-     * 学习打卡
-     *
-     * @param studyRecordDto
-     * @return
-     */
-    @Override
-    public Result saveStudyRecord(StudyRecordDto studyRecordDto) {
-        CardState cardState;
-        int reviewCount;
-        Rating rating = Rating.of(Integer.parseInt(studyRecordDto.getRatingValue()));
-        if (studyRecordDto.isFirst()){
-            // 首次学习
-            cardState = fsrsService.firstLearn(rating);
-            reviewCount = 1;
-        }else{
-            // 多次复习 寻找上次学习fsrs卡片数据
-            Record lastRecord = Db.findFirst(Db.getSqlPara(SQL_KEY + "queryLastStudyRecord", Kv.by("relationId", studyRecordDto.getRelationId())));
-            CardState card = new CardState();
-            card.setLastReview(lastRecord.get("created_time"));
-            card.setDifficulty(Double.parseDouble(lastRecord.getStr("difficulty")));
-            card.setStability(Double.parseDouble(lastRecord.getStr("stability")));
-            card.setLearningPhase(Boolean.parseBoolean(lastRecord.getStr("learning_phase")));
-            card.setReviewCount(Integer.parseInt(lastRecord.getStr("review_count")));
-            cardState = fsrsService.reviewCard(card,rating);
-            reviewCount = Integer.parseInt(lastRecord.getStr("review_count")) + 1;
-        }
-        Record save = new Record();
-        save.set("zo_website_study_record_id",StrKit.uuid());
-        save.set("created_time",new Date());
-        save.set("relation_id",studyRecordDto.getRelationId());
-        save.set("relation_type_text",studyRecordDto.getRelationTypeText());
-        save.set("relation_type_value",studyRecordDto.getRelationTypeValue());
-        save.set("timing",studyRecordDto.getTiming());
-        save.set("deleted","0");
-        // fsrs卡片模型持久化
-        save.set("rating_value",studyRecordDto.getRatingValue());
-        save.set("rating_text",studyRecordDto.getRatingText());
-        save.set("difficulty",String.format("%.4f", cardState.getDifficulty()));
-        save.set("stability",String.format("%.4f",cardState.getStability()));
-        save.set("next_review",String.valueOf(cardState.getNextReview()));
-        save.set("learning_phase",String.valueOf(cardState.isLearningPhase()));
-        save.set("review_count",String.valueOf(reviewCount));
-        Db.save("zo_website_study_record",save);
-        return success();
-    }
-
-    /**
-     * 查询历史学习打卡记录
-     *
-     * @param relationId
-     * @return
-     */
-    @Override
-    public Result queryStudyRecord(String relationId) {
-        Record result = new Record();
-        List<Record> recordList = Db.find(Db.getSqlPara(SQL_KEY + "queryStudyRecord", Kv.by("relationId", relationId)));
-        if (!recordList.isEmpty()){
-            // 起点
-            String firstDay = recordList.get(0).getStr("day");
-            List<ReviewRecord> reviewRecordList = recordList.stream().map(r -> {
-                int days = countPastDay(r.getStr("day"), firstDay);
-                return new ReviewRecord(days, Integer.parseInt(r.getStr("rating_value")));
-            }).distinct()
-                .collect(Collectors.toList());
-            Map<String, List<Series>> line = FSRSCurveCalculator.parseLine(reviewRecordList);
-            result.set("line",line);
-        }
-        // 推荐下次复习时间：取该小节最新一条学习记录里的 next_review（FSRS 调度结果）
-        Record lastRecord = Db.findFirst(Db.getSqlPara(SQL_KEY + "queryLastStudyRecord", Kv.by("relationId", relationId)));
-        String nextReviewTime = "";
-        if (lastRecord != null && lastRecord.get("next_review") != null) {
-            // LocalDateTime 字符串形如 2026-10-21T10:30:00.123，规整为 yyyy-MM-dd HH:mm
-            String raw = lastRecord.getStr("next_review").replace("T", " ");
-            nextReviewTime = raw.length() > 16 ? raw.substring(0, 16) : raw;
-        }
-        result.set("nextReviewTime",nextReviewTime);
-        long totalTiming = recordList.stream().map(r->Long.parseLong(r.getStr("timing"))).reduce(0L,Long::sum);
-        result.set("totalTiming",secondToHms(totalTiming));
-        // 累计学习次数：该小节的历史学习记录条数
-        result.set("totalCount",recordList.size());
-        return success().setData(result);
-    }
-
-    /**
-     * 计算天数：day1 >= day2，格式 yyyy-MM-dd
-     * day1 == day2 返回 1
-     * 例：day2=2026-10-20, day1=2026-10-20 → 1
-     *     day2=2026-10-20, day1=2026-10-21 → 2
-     */
-    public int countPastDay(String day1, String day2) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate d1 = LocalDate.parse(day1, formatter);
-        LocalDate d2 = LocalDate.parse(day2, formatter);
-        // 校验，按你前提 day1 >= day2，这里加个保护
-        if (d1.isBefore(d2)) {
-            throw new IllegalArgumentException("day1 不能小于 day2");
-        }
-        // ChronoUnit.between 得到间隔天数（不含起始当天），+1 满足同天返回1
-        long days = java.time.temporal.ChronoUnit.DAYS.between(d2, d1) + 1;
-        return (int) days;
-    }
-
-    /**
-     * 将总秒数转为 时分秒字符串 HH:mm:ss
-     * @param totalSeconds 总秒数
-     * @return HH:mm:ss
-     */
-    public String secondToHms(long totalSeconds) {
-        if (totalSeconds < 0) {
-            return "00:00:00";
-        }
-        long hours = totalSeconds / 3600;
-        long remain = totalSeconds % 3600;
-        long minutes = remain / 60;
-        long seconds = remain % 60;
-        // 格式化，不足两位补0
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-    }
-
-    /**
      * 随机获取一篇笔记小节
      *
      * @return
@@ -448,8 +328,7 @@ public class NotesServiceImpl extends BaseService implements NotesService {
                     : "今天没有可学习的小节了，明天再来吧");
         }
         int index = randomInt(list.size()-1);
-        Record record = Db.findFirst(Db.getSqlPara(SQL_KEY + "getTodayNoStudyById", Kv.by("id", list.get(index).getStr("id"))));
-        return success().setData(record);
+        return success().setData(Kv.by("id",list.get(index).getStr("id")));
     }
 
     /**
@@ -465,24 +344,7 @@ public class NotesServiceImpl extends BaseService implements NotesService {
         return RANDOM.nextInt(max + 1);
     }
 
-    /**
-     * 斩杀不需要复习的知识
-     *
-     * @param studyBanDto
-     * @return
-     */
-    @Override
-    public Result saveStudyBan(StudyBanDto studyBanDto) {
-        Record save = new Record();
-        save.set("zo_website_study_ban_id",StrKit.uuid());
-        save.set("created_time",new Date());
-        save.set("relation_id",studyBanDto.getRelationId());
-        save.set("relation_type_text",studyBanDto.getRelationTypeText());
-        save.set("relation_type_value",studyBanDto.getRelationTypeValue());
-        save.set("deleted","0");
-        Db.save("zo_website_study_ban",save);
-        return success();
-    }
+
 
     /**
      * 控制面板统计相关

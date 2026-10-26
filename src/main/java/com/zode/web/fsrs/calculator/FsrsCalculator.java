@@ -227,6 +227,56 @@ public class FsrsCalculator {
         return 9.0 * stability * (1.0 / r - 1.0);
     }
 
+    // ===================== 记忆牢固度判定（方案B：基于可提取性 R） =====================
+
+    /**
+     * 记忆牢固度默认判定阈值：回忆概率 ≥ 85% 视为相对牢固
+     */
+    private static final double DEFAULT_FIRM_THRESHOLD = 0.90;
+
+    /**
+     * 获取卡片当前的可提取性（回忆概率）R
+     *
+     * @param card 卡片状态
+     * @param now  当前时间
+     * @return 当前回忆概率，取值范围 [0, 1]
+     * @throws IllegalArgumentException 卡片状态或当前时间为空时抛出
+     */
+    public double getRetrievability(CardState card, LocalDateTime now) {
+        if (card == null || now == null) {
+            throw new IllegalArgumentException("卡片状态和当前时间不能为空");
+        }
+        double deltaDays = calculateDeltaDays(card.getLastReview(), now);
+        return calculateRetrievability(deltaDays, card.getStability());
+    }
+
+    /**
+     * 判断记忆是否相对牢固（使用默认阈值 0.85）
+     *
+     * @param card 卡片状态
+     * @param now  当前时间
+     * @return true-记忆相对牢固；false-遗忘风险较高
+     */
+    public boolean isMemoryFirm(CardState card, LocalDateTime now) {
+        return isMemoryFirm(card, now, DEFAULT_FIRM_THRESHOLD);
+    }
+
+    /**
+     * 判断记忆是否相对牢固（自定义阈值）
+     *
+     * @param card      卡片状态
+     * @param now       当前时间
+     * @param threshold 自定义回忆概率阈值，推荐范围 0.8 ~ 0.9
+     * @return true-记忆相对牢固；false-遗忘风险较高
+     * @throws IllegalArgumentException 阈值超出 (0, 1) 范围时抛出
+     */
+    public boolean isMemoryFirm(CardState card, LocalDateTime now, double threshold) {
+        if (threshold <= 0 || threshold >= 1) {
+            throw new IllegalArgumentException("阈值必须在 0 到 1 之间（不包含边界）");
+        }
+        return getRetrievability(card, now) >= threshold;
+    }
+
     /**
      * 数值钳位
      */

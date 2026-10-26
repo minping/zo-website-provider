@@ -2,10 +2,6 @@ package com.zode.web.notes.controller;
 
 import com.common.base.BaseController;
 import com.common.util.Result;
-import com.zode.web.notes.dto.ChapterSaveVo;
-import com.zode.web.notes.dto.NoteSaveVo;
-import com.zode.web.notes.dto.StudyBanDto;
-import com.zode.web.notes.dto.StudyRecordDto;
 import com.zode.web.notes.service.NotesService;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,24 +39,10 @@ public class NotesIndexController extends BaseController {
         return notesService.queryChapterList(noteId);
     }
 
-    @PostMapping("/saveStudyRecord")
-    public Result saveStudyRecord(@RequestBody StudyRecordDto studyRecordDto){
-        return notesService.saveStudyRecord(studyRecordDto);
-    }
-
-    @GetMapping("/queryStudyRecord")
-    public Result queryStudyRecord(String relationId){
-        return notesService.queryStudyRecord(relationId);
-    }
 
     @GetMapping("/getRandomContent")
     public Result getRandomContent(String noteId){
         return notesService.getRandomContent(noteId);
-    }
-
-    @PostMapping("/saveStudyBan")
-    public Result saveStudyBan(@RequestBody StudyBanDto studyBanDto){
-        return notesService.saveStudyBan(studyBanDto);
     }
 
     @GetMapping("/batchCountMd")
@@ -72,4 +54,6 @@ public class NotesIndexController extends BaseController {
     public Result getNoteLine(String noteId){
         return notesService.getNoteLine(noteId);
     }
+
+
 }

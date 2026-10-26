@@ -1,4 +1,4 @@
-package com.zode.web.notes.dto;
+package com.zode.web.study.dto;
 
 import lombok.Data;
 
@@ -8,8 +8,9 @@ import lombok.Data;
  * @purpose
  */
 @Data
-public class StudyBanDto {
+public class StudyDto {
 
+    private String followType;
     private String relationId;
     private String relationTypeText;
     private String relationTypeValue;

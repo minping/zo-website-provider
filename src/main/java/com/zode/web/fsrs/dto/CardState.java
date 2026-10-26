@@ -1,5 +1,7 @@
 package com.zode.web.fsrs.dto;
 
+import com.jfinal.plugin.activerecord.Record;
+
 import java.time.LocalDateTime;
 
 /**
@@ -29,6 +31,17 @@ public class CardState {
         this.learningPhase = true; // 新卡片默认进入学习阶段
         this.reviewCount = 0;
     }
+
+    public static CardState Of(Record lastRecord){
+        CardState card = new CardState();
+        card.setLastReview(lastRecord.get("created_time"));
+        card.setDifficulty(Double.parseDouble(lastRecord.getStr("difficulty")));
+        card.setStability(Double.parseDouble(lastRecord.getStr("stability")));
+        card.setLearningPhase(Boolean.parseBoolean(lastRecord.getStr("learning_phase")));
+        card.setReviewCount(Integer.parseInt(lastRecord.getStr("review_count")));
+        return card;
+    }
+
 
     // getter & setter
     public double getDifficulty() { return difficulty; }
