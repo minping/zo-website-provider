@@ -1,7 +1,8 @@
 package com.zode.web.index.controller;
 
 import com.common.base.BaseController;
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
+import com.zo.platform.starter.session.AuthIgnore;
 import com.zode.web.index.service.IndexService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/index")
+@AuthIgnore
 public class IndexController extends BaseController {
 
     @Resource

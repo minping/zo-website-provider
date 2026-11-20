@@ -1,7 +1,7 @@
 package com.zode.web.author.controller;
 
 import com.common.base.BaseController;
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
 import com.zode.web.author.dto.AuthorInfoDto;
 import com.zode.web.author.dto.AuthorProductDto;
 import com.zode.web.author.dto.AuthorProjectDto;

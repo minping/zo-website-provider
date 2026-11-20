@@ -1,10 +1,10 @@
 package com.zode.web.index.service.impl;
 
 import com.common.base.BaseService;
-import com.common.util.Result;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.zo.platform.sdk.common.Result;
 import com.zode.web.index.service.IndexService;
 import org.springframework.stereotype.Service;
 

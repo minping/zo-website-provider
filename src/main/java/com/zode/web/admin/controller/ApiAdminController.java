@@ -1,7 +1,7 @@
 package com.zode.web.admin.controller;
 
 import com.common.base.BaseController;
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
 import com.zode.web.api.dto.ApiSaveDto;
 import com.zode.web.api.service.ApiService;
 import org.springframework.web.bind.annotation.*;

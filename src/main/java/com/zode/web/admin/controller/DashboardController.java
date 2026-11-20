@@ -1,6 +1,6 @@
 package com.zode.web.admin.controller;
 
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
 import com.jfinal.plugin.activerecord.Record;
 import com.zode.web.article.service.ArticleService;
 import com.zode.web.notes.service.NotesService;

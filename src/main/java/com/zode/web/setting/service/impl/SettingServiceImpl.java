@@ -1,10 +1,11 @@
 package com.zode.web.setting.service.impl;
 
 import com.common.base.BaseService;
-import com.common.util.Result;
-import com.common.util.StrKit;
+import com.zo.platform.sdk.common.Result;
+
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.zo.platform.sdk.common.kit.StrKit;
 import com.zode.web.setting.dto.SetDto;
 import com.zode.web.setting.service.SettingService;
 import org.springframework.stereotype.Service;

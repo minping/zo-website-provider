@@ -1,6 +1,7 @@
 package com.zode.web.study.controller;
 
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
+import com.zo.platform.starter.session.AuthIgnore;
 import com.zode.web.study.dto.StudyDto;
 import com.zode.web.notes.dto.StudyRecordDto;
 import com.zode.web.study.service.StudyService;
@@ -15,6 +16,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/index/study")
+@AuthIgnore
 public class StudyController {
 
     @Resource
@@ -51,5 +53,9 @@ public class StudyController {
         return studyService.queryStudyDomainNoticeList(type);
     }
 
+    @GetMapping("/queryWeekStudy")
+    public Result queryWeekStudy(){
+        return studyService.queryWeekStudy();
+    }
 }
 

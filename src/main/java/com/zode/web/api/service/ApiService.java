@@ -1,6 +1,6 @@
 package com.zode.web.api.service;
 
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
 import com.zode.web.api.dto.ApiSaveDto;
 
 /**

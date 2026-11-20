@@ -1,7 +1,7 @@
 package com.zode.web.admin.controller;
 
 import com.common.base.BaseController;
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
 import com.jfinal.plugin.activerecord.Record;
 import com.zode.web.article.dto.ArticleVo;
 import com.zode.web.article.service.ArticleService;
@@ -37,8 +37,8 @@ public class ArticleAdminController extends BaseController {
     }
 
     @GetMapping("/deleteTag")
-    public Result deleteTag(String tagId){
-        return articleService.deleteTag(tagId) ? Result.me().success() : Result.me().error();
+    public Result deleteTag(String id){
+        return articleService.deleteTag(id) ? Result.me().success() : Result.me().error();
     }
 
     @PostMapping("/insertArticle")

@@ -70,6 +70,7 @@
             #(for.index == 0 ? "" : ",")  #para(id)
             #end
         )
+        order by next_review asc
     #end
 
     #sql("queryCancelFlow")
@@ -84,5 +85,13 @@
         FROM zo_website_study_like
         WHERE deleted = '0'
         GROUP BY relation_id
+    #end
+
+    #sql("queryWeekStudy")
+        SELECT DATE_FORMAT(created_time,'%Y-%m-%d') as dayStr,COUNT(relation_id) AS num
+        FROM zo_website_study_record r
+        WHERE deleted = '0'
+        AND created_time BETWEEN #para(start) AND #para(end)
+        GROUP BY DATE_FORMAT(created_time,'%Y-%m-%d')
     #end
 #end

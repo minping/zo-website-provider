@@ -1,11 +1,13 @@
 package com.zode.web.author.service.impl;
 
-import com.common.util.DateKit;
-import com.common.util.Result;
-import com.common.util.StrKit;
+
+import com.zo.platform.sdk.common.Result;
+
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.zo.platform.sdk.common.kit.DateKit;
+import com.zo.platform.sdk.common.kit.StrKit;
 import com.zode.web.author.dto.AuthorInfoDto;
 import com.zode.web.author.dto.AuthorProcessDto;
 import com.zode.web.author.dto.AuthorProductDto;

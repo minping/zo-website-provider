@@ -1,6 +1,7 @@
 package com.zode.web.setting.controller;
 
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
+import com.zo.platform.starter.session.AuthIgnore;
 import com.zode.web.setting.service.SettingService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/setting")
+@AuthIgnore
 public class SettingController {
 
     @Resource

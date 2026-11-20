@@ -1,6 +1,6 @@
 package com.zode.web.article.service;
 
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
 import com.jfinal.plugin.activerecord.Record;
 import com.zode.web.article.dto.ArticleVo;
 import org.springframework.web.multipart.MultipartFile;

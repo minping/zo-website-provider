@@ -232,7 +232,7 @@ public class FsrsCalculator {
     /**
      * 记忆牢固度默认判定阈值：回忆概率 ≥ 85% 视为相对牢固
      */
-    private static final double DEFAULT_FIRM_THRESHOLD = 0.90;
+    private static final double DEFAULT_FIRM_THRESHOLD = 0.85;
 
     /**
      * 获取卡片当前的可提取性（回忆概率）R

@@ -1,13 +1,13 @@
 package com.zode.web.article.service.impl;
 
 import com.common.base.BaseService;
-import com.common.util.DateKit;
-import com.common.util.Result;
-import com.common.util.StrKit;
+import com.zo.platform.sdk.common.Result;
 import com.file.service.FileStorageService;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.zo.platform.sdk.common.kit.DateKit;
+import com.zo.platform.sdk.common.kit.StrKit;
 import com.zode.web.article.dto.ArticleVo;
 import com.zode.web.article.service.ArticleService;
 import com.zode.web.article.util.ColorGenerator;
@@ -264,8 +264,7 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
         }
         kv.set("status_value","1");
         List<Record> articleList = Db.find(Db.getSqlPara(SQL_KEY + "queryArticle", kv));
-        Map<String, List<Record>> res = articleList.stream().collect(Collectors.groupingBy(a -> a.getStr("tag_text"), Collectors.mapping(r -> r, Collectors.toList())));
-        return Result.me().setData(res);
+        return Result.me().setData(articleList);
     }
 
 

@@ -104,5 +104,31 @@
         ORDER BY c.created_time ASC
     #end
 
+    #sql("queryAllTags")
+        select zo_website_note_tag_id as id,name,color from zo_website_note_tag where deleted = '0'
+    #end
+
+    #sql("queryTree")
+        SELECT '0' AS id,'' AS pid,'0' AS global_id,'1' AS LEVEL,'知识库架构' AS title
+
+        UNION ALL
+
+        SELECT zo_website_note_tag_id AS id,'0' AS pid,CONCAT('0.',zo_website_note_tag_id) AS global_id,'2' AS `level`,`name` AS  title
+        FROM zo_website_note_tag WHERE deleted = '0'
+
+        UNION ALL
+
+        SELECT zo_website_note_id AS id,t.zo_website_note_tag_id AS pid,CONCAT('0.',t.zo_website_note_tag_id,'.',n.zo_website_note_id) AS global_id,'3' AS `level`,n.name AS  title
+        FROM `zo_website_note` n
+                 INNER JOIN zo_website_note_tag t ON n.tag_value = t.zo_website_note_tag_id AND t.deleted = '0'
+        WHERE n.deleted = '0' AND n.status_value = '1'
+
+        UNION ALL
+
+        SELECT zo_website_note_chapter_id AS id,n.zo_website_note_id AS pid,CONCAT('0.',n.tag_value,'.',n.zo_website_note_id,'.',zo_website_note_chapter_id) AS global_id,'4' AS `level`,c.title
+        FROM `zo_website_note_chapter` c
+                 INNER JOIN zo_website_note n ON n.zo_website_note_id = c.zo_website_note_id AND n.deleted = '0' AND n.status_value = '1'
+        WHERE c.deleted = '0' AND c.tree_level = '1'
+#end
 
 #end

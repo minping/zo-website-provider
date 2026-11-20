@@ -1,8 +1,9 @@
 package com.zode.web.article.controller;
 
 import com.common.base.BaseController;
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
 import com.jfinal.plugin.activerecord.Record;
+import com.zo.platform.starter.session.AuthIgnore;
 import com.zode.web.article.service.ArticleService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/index/article")
+@AuthIgnore
 public class ArticleIndexController extends BaseController {
 
     @Resource

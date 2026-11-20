@@ -1,7 +1,7 @@
 package com.zode.web.article.dto;
 
-import com.common.util.StrKit;
 import com.jfinal.plugin.activerecord.Record;
+import com.zo.platform.sdk.common.kit.StrKit;
 import lombok.Data;
 
 /**
@@ -23,7 +23,7 @@ public class ApiParamDto {
     public Record parseRecord(String apiId){
         Record record = new Record();
         if (StrKit.isBlank(this.id)){
-            record.set("zo_website_api_param_id",StrKit.uuid());
+            record.set("zo_website_api_param_id", StrKit.uuid());
         }else{
             record.set("zo_website_api_param_id",this.id);
         }

@@ -1,6 +1,6 @@
 package com.zode.web.author.service;
 
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
 import com.zode.web.author.dto.AuthorInfoDto;
 import com.zode.web.author.dto.AuthorProductDto;
 import com.zode.web.author.dto.AuthorProjectDto;

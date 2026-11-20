@@ -123,4 +123,20 @@ public abstract class BaseZoWebsiteNote<M extends BaseZoWebsiteNote<M>> extends 
 		return getStr("status_text");
 	}
 	
+	public void setTagValue(java.lang.String tagValue) {
+		set("tag_value", tagValue);
+	}
+	
+	public java.lang.String getTagValue() {
+		return getStr("tag_value");
+	}
+	
+	public void setTagText(java.lang.String tagText) {
+		set("tag_text", tagText);
+	}
+	
+	public java.lang.String getTagText() {
+		return getStr("tag_text");
+	}
+	
 }

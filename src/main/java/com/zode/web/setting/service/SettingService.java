@@ -1,6 +1,6 @@
 package com.zode.web.setting.service;
 
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
 
 /**
  * @author zhoump

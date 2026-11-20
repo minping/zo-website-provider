@@ -1,6 +1,6 @@
 package com.zode.web.study.service;
 
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
 import com.zode.web.study.dto.StudyDto;
 import com.zode.web.notes.dto.StudyRecordDto;
 
@@ -51,4 +51,11 @@ public interface StudyService {
      * @return
      */
     Result queryStudyDomainNoticeList(String type);
+
+    /**
+     * 获取本周学习情况
+     * @return
+     */
+    Result queryWeekStudy();
+
 }

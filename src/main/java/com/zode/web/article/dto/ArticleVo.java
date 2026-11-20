@@ -1,7 +1,7 @@
 package com.zode.web.article.dto;
 
-import com.common.util.StrKit;
-import com.jfinal.plugin.activerecord.exception.ZoException;
+import com.zo.platform.sdk.common.kit.StrKit;
+import com.zo.platform.starter.exception.ZoException;
 import lombok.Data;
 
 /**

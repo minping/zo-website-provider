@@ -1,7 +1,8 @@
 package com.zode.web.api.controller;
 
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
 import com.jfinal.plugin.activerecord.Record;
+import com.zo.platform.starter.session.AuthIgnore;
 import com.zode.web.api.service.ApiService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/index/api")
+@AuthIgnore
 public class ApiIndexController {
 
     @Resource

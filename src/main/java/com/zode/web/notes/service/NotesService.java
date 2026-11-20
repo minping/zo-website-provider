@@ -1,8 +1,11 @@
 package com.zode.web.notes.service;
 
-import com.common.util.Result;
+import com.jfinal.plugin.activerecord.Record;
+import com.zo.platform.sdk.common.Result;
 import com.zode.web.notes.dto.ChapterSaveVo;
 import com.zode.web.notes.dto.NoteSaveVo;
+
+import java.util.List;
 
 /**
  * @author zhoump
@@ -111,4 +114,13 @@ public interface NotesService {
      * @return
      */
     Result getNoteLine(String noteId);
+
+    List<Record> queryAllTags();
+
+    boolean insertTag(String tagName, String tagColor);
+
+    boolean deleteTag(String tagId);
+
+    Result queryThinkingData();
+
 }

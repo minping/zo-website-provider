@@ -1,11 +1,11 @@
 package com.zode.web.study.service.impl;
 
 import com.common.base.BaseService;
-import com.common.util.Result;
-import com.common.util.StrKit;
+import com.zo.platform.sdk.common.Result;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.zo.platform.sdk.common.kit.StrKit;
 import com.zode.web.fsrs.calculator.FSRSCurveCalculator;
 import com.zode.web.fsrs.dto.CardState;
 import com.zode.web.fsrs.dto.Rating;
@@ -18,6 +18,7 @@ import com.zode.web.study.service.StudyService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,7 +35,8 @@ import java.util.stream.Collectors;
 @Service
 public class StudyServiceImpl extends BaseService implements StudyService {
 
-    private final static String SQL_KEY = "web.study.sql.";
+    private static final String SQL_KEY = "web.study.sql.";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Resource
     FsrsService fsrsService;
@@ -63,7 +65,7 @@ public class StudyServiceImpl extends BaseService implements StudyService {
             reviewCount = Integer.parseInt(lastRecord.getStr("review_count")) + 1;
         }
         Record save = new Record();
-        save.set("zo_website_study_record_id",StrKit.uuid());
+        save.set("zo_website_study_record_id", StrKit.uuid());
         save.set("created_time",new Date());
         save.set("relation_id",studyRecordDto.getRelationId());
         save.set("relation_type_text",studyRecordDto.getRelationTypeText());
@@ -213,14 +215,11 @@ public class StudyServiceImpl extends BaseService implements StudyService {
         // 今日学习
         List<Record> todayList = Db.find(Db.getSqlPara(SQL_KEY + "queryTodayStudy"));
         result.set("todayStudyCount",todayList.size());
-        // 今日需复习
-        List<Record> needList = Db.find(Db.getSqlPara(SQL_KEY + "queryTodayNeedStudy"));
-        result.set("todayNeedStudyCount",needList.size());
         // 所有学习过的记录
         List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryHaveStudy"));
         List<String> finishList = list.stream()
-                .filter(r -> fsrsService.isMemoryFirm(CardState.Of(r)) && Integer.parseInt(r.getStr("day_diff")) > 30)
-                .map(r->r.getStr("zo_website_study_record_id"))
+                .filter(r -> fsrsService.isMemoryFirm(CardState.Of(r)) && Integer.parseInt(r.getStr("day_diff")) > 21)
+                .map(r->r.getStr("relation_id"))
                 .collect(Collectors.toList());
         // 记忆构建
         long ing = list.size()-finishList.size();
@@ -228,6 +227,10 @@ public class StudyServiceImpl extends BaseService implements StudyService {
         // 记忆牢固
         long finish = finishList.size();
         result.set("finish",finish);
+        // 今日需复习
+        List<Record> needList = Db.find(Db.getSqlPara(SQL_KEY + "queryTodayNeedStudy"));
+        long need = needList.stream().filter(r -> !finishList.contains(r.getStr("relation_id"))).count();
+        result.set("todayNeedStudyCount",need);
 
         List<Record> aeList = Db.find(Db.getSqlPara(SQL_KEY + "queryAgainOrEasy"));
         // 难标记
@@ -261,22 +264,24 @@ public class StudyServiceImpl extends BaseService implements StudyService {
                 relationId = todayList.stream().map(r->r.getStr("relation_id")).collect(Collectors.toList());
                 break;
             case "1":
-                // 今日需复习
-                List<Record> needList = Db.find(Db.getSqlPara(SQL_KEY + "queryTodayNeedStudy"));
-                relationId = needList.stream().map(r->r.getStr("relation_id")).collect(Collectors.toList());
-                break;
             case "2":
             case "3":
                 List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryHaveStudy"));
                 List<String> finishList  = list.stream()
-                        .filter(r -> fsrsService.isMemoryFirm(CardState.Of(r)) && Integer.parseInt(r.getStr("day_diff")) > 30)
+                        .filter(r -> fsrsService.isMemoryFirm(CardState.Of(r)) && Integer.parseInt(r.getStr("day_diff")) > 21)
                         .map(r->r.getStr("relation_id"))
                         .collect(Collectors.toList());
                 if ("3".equals(type)){
                     relationId = finishList;
-                }else{
+                }else if ("2".equals(type)){
                     relationId = list.stream().filter(r->!finishList.contains(r.getStr("relation_id")))
                             .map(r->r.getStr("relation_id"))
+                            .collect(Collectors.toList());
+                }else{
+                    // 今日需复习
+                    List<Record> needList = Db.find(Db.getSqlPara(SQL_KEY + "queryTodayNeedStudy"));
+                    relationId = needList.stream().map(r->r.getStr("relation_id"))
+                            .filter(r -> !finishList.contains(r))
                             .collect(Collectors.toList());
                 }
                 break;
@@ -314,4 +319,38 @@ public class StudyServiceImpl extends BaseService implements StudyService {
         List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryNotesListByIds", Kv.by("ids", relationId)));
         return success().setData(list);
     }
+
+    /**
+     * 获取本周学习情况
+     *
+     * @return
+     */
+    @Override
+    public Result queryWeekStudy() {
+        List<String> weekList = this.getThisWeekDateList();
+        List<Record> list = Db.find(Db.getSqlPara(SQL_KEY + "queryWeekStudy", Kv.by("start", weekList.get(0)).set("end", weekList.get(6))));
+        Map<String, String> map = list.stream().collect(Collectors.toMap(r -> r.getStr("dayStr"), r -> r.getStr("num"), (x, y) -> x));
+        List<String> numList = new ArrayList<>();
+        for (String s : weekList) {
+            numList.add(map.getOrDefault(s, "0"));
+        }
+        return success().setData(numList);
+    }
+
+    /**
+     * 获取本周所有日期（周一 ~ 周日）
+     * @return List<String> 顺序：周一、周二...周日
+     */
+    public List<String> getThisWeekDateList() {
+        List<String> result = new ArrayList<>(7);
+        LocalDate today = LocalDate.now();
+        // 找到本周周一
+        LocalDate monday = today.with(DayOfWeek.MONDAY);
+        for (int i = 0; i < 7; i++) {
+            LocalDate date = monday.plusDays(i);
+            result.add(date.format(FORMATTER));
+        }
+        return result;
+    }
+
 }

@@ -125,4 +125,12 @@ public abstract class BaseZoWebsiteAuthor<M extends BaseZoWebsiteAuthor<M>> exte
 		return getStr("work_time");
 	}
 	
+	public void setUserId(java.lang.String userId) {
+		set("user_id", userId);
+	}
+	
+	public java.lang.String getUserId() {
+		return getStr("user_id");
+	}
+	
 }

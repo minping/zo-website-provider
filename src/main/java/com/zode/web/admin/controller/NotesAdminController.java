@@ -1,13 +1,15 @@
 package com.zode.web.admin.controller;
 
 import com.common.base.BaseController;
-import com.common.util.Result;
+import com.jfinal.plugin.activerecord.Record;
+import com.zo.platform.sdk.common.Result;
 import com.zode.web.notes.dto.ChapterSaveVo;
 import com.zode.web.notes.dto.NoteSaveVo;
 import com.zode.web.notes.service.NotesService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author zhoump
@@ -71,4 +73,19 @@ public class NotesAdminController extends BaseController {
         return notesService.completeChapter(id);
     }
 
+    @GetMapping("/queryAllTags")
+    public Result queryAllTags(){
+        List<Record> list = notesService.queryAllTags();
+        return Result.me().success().setData(list);
+    }
+
+    @PostMapping("/insertTag")
+    public Result insertTag(String tagName,String tagColor){
+        return notesService.insertTag(tagName,tagColor) ? Result.me().success() : Result.me().error();
+    }
+
+    @GetMapping("/deleteTag")
+    public Result deleteTag(String tagId){
+        return notesService.deleteTag(tagId) ? Result.me().success() : Result.me().error();
+    }
 }

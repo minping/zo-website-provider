@@ -1,13 +1,14 @@
 package com.zode.web.notes.service.impl;
 
 import com.common.base.BaseService;
-import com.common.util.DateKit;
-import com.common.util.Result;
-import com.common.util.StrKit;
+import com.zo.platform.sdk.common.Result;
 import com.jfinal.kit.Kv;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.TreeInfo;
+import com.zo.platform.sdk.common.kit.DateKit;
+import com.zo.platform.sdk.common.kit.StrKit;
+import com.zode.web.article.util.ColorGenerator;
 import com.zode.web.fsrs.calculator.FSRSCurveCalculator;
 import com.zode.web.fsrs.dto.CardState;
 import com.zode.web.fsrs.dto.ReviewRecord;
@@ -58,6 +59,8 @@ public class NotesServiceImpl extends BaseService implements NotesService {
         note.set("status_value",noteSaveVo.getStatusValue());
         note.set("status_text","0".equals(noteSaveVo.getStatusValue()) ? "未发布": "已发布" );
         note.set("deleted","0");
+        note.set("tag_value",noteSaveVo.getTagId());
+        note.set("tag_text",noteSaveVo.getTagName());
         String noteId;
         if (StrKit.isBlank(noteSaveVo.getId())){
             // 新增
@@ -448,5 +451,35 @@ public class NotesServiceImpl extends BaseService implements NotesService {
             studyLineDto.setLineList(lineList);
         }
         return success().setData(studyLineDto);
+    }
+
+    @Override
+    public List<Record> queryAllTags() {
+        return Db.find(Db.getSqlPara(SQL_KEY + "queryAllTags"));
+    }
+
+    @Override
+    public boolean deleteTag(String tagId) {
+        Record update = new Record();
+        update.set("zo_website_note_tag_id", tagId);
+        update.set("deleted", 1);
+        return Db.update("zo_website_note_tag", "zo_website_note_tag_id", update);
+    }
+
+    @Override
+    public boolean insertTag(String tagName, String tagColor) {
+        Record save = new Record();
+        save.set("zo_website_note_tag_id", StrKit.uuid());
+        save.set("name",tagName);
+        save.set("color", StrKit.isBlank(tagColor) ? ColorGenerator.generateRandomHex() : tagColor);
+        save.set("deleted",0);
+
+        return Db.save("zo_website_note_tag", "zo_website_note_tag_id", save);
+    }
+
+    @Override
+    public Result queryThinkingData() {
+        List<Record> tree = Db.findTree(new TreeInfo("id", "pid"), Db.getSqlPara(SQL_KEY + "queryTree"));
+        return success().setData(tree);
     }
 }

@@ -17,6 +17,7 @@ public class _MappingKit {
 	
 	public static void mapping(ActiveRecordPlugin arp) {
 		arp.addMapping("zo_file", "zo_file_id", ZoFile.class);
+		arp.addMapping("zo_platform_user", "zo_platform_user_id", ZoPlatformUser.class);
 		arp.addMapping("zo_website_api", "zo_website_api_id", ZoWebsiteApi.class);
 		arp.addMapping("zo_website_api_call_log", "zo_website_api_call_log_id", ZoWebsiteApiCallLog.class);
 		arp.addMapping("zo_website_api_param", "zo_website_api_param_id", ZoWebsiteApiParam.class);
@@ -29,6 +30,7 @@ public class _MappingKit {
 		arp.addMapping("zo_website_author_project", "zo_website_author_project_id", ZoWebsiteAuthorProject.class);
 		arp.addMapping("zo_website_note", "zo_website_note_id", ZoWebsiteNote.class);
 		arp.addMapping("zo_website_note_chapter", "zo_website_note_chapter_id", ZoWebsiteNoteChapter.class);
+		arp.addMapping("zo_website_note_tag", "zo_website_note_tag_id", ZoWebsiteNoteTag.class);
 		arp.addMapping("zo_website_setting", "zo_website_setting_id", ZoWebsiteSetting.class);
 		arp.addMapping("zo_website_study_ban", "zo_website_study_ban_id", ZoWebsiteStudyBan.class);
 		arp.addMapping("zo_website_study_like", "zo_website_study_like_id", ZoWebsiteStudyLike.class);

@@ -1,7 +1,8 @@
 package com.zode.web.notes.controller;
 
 import com.common.base.BaseController;
-import com.common.util.Result;
+import com.zo.platform.sdk.common.Result;
+import com.zo.platform.starter.session.AuthIgnore;
 import com.zode.web.notes.service.NotesService;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/index/notes")
+@AuthIgnore
 public class NotesIndexController extends BaseController {
 
     @Resource
@@ -55,5 +57,9 @@ public class NotesIndexController extends BaseController {
         return notesService.getNoteLine(noteId);
     }
 
+    @GetMapping("/queryThinkingData")
+    public Result queryThinkingData(){
+        return notesService.queryThinkingData();
+    }
 
 }

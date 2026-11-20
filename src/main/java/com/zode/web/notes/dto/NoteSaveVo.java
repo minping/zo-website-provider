@@ -15,5 +15,7 @@ public class NoteSaveVo {
     private String author;
     private String preface;
     private String statusValue;
+    private String tagId;
+    private String tagName;
 
 }
